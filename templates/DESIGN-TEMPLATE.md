@@ -78,14 +78,33 @@ version: 1
 
 ## 7. Security & governance
 
+> **Before filling this section out:** invoke the `security-grill-me` skill. It interrogates your threat model across 8 domains — threat actors, trust boundaries, data classification, authentication, authorization, input/injection, secrets, and audit — and produces a threat model summary you can paste directly here.
+
+### Threat actors
+
+| Actor | Goal if malicious | Mitigation |
+|---|---|---|
+| Unauthenticated external | | |
+| Authenticated user (cross-tenant) | | |
+| Compromised dependency | | |
+| Insider / privilege escalation | | |
+
+### Controls
+
 | Concern | Mechanism |
 |---|---|
 | User auth | |
-| Authorization | |
+| Authorization (route + data layer) | |
+| Tenant isolation (query-level enforcement) | |
 | Secret storage | |
-| Audit | |
-| Tenant isolation | |
+| Audit log (append-only, tamper-evident) | |
+| Input validation boundaries | |
 | [Add rows as needed] | |
+
+### Residual risks
+
+- [Risk 1 — known, accepted, reason]
+- [Risk 2 — known, tracked in open questions]
 
 ---
 

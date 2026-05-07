@@ -58,9 +58,9 @@ You are initiating the **PROJECT_NAME** project at **REPO_PATH**. Execute the 5 
 
 ---
 
-## Step 2 — Create four project-scoped dev skills
+## Step 2 — Create seven project-scoped dev skills
 
-**Deliverable:** Four skills at `REPO_PATH/.claude/skills/`, each as `<name>/SKILL.md` with proper frontmatter per global skill best practices.
+**Deliverable:** Seven skills at `REPO_PATH/.claude/skills/`, each as `<name>/SKILL.md` with proper frontmatter per global skill best practices.
 
 ### Skill 2a: `planner`
 
@@ -126,7 +126,25 @@ You are initiating the **PROJECT_NAME** project at **REPO_PATH**. Execute the 5 
   - **Hard-block rule**: CRITICAL blocks merge; HIGH requires acknowledgment; MEDIUM/LOW to backlog
   - **Model preference**: Opus (matches official Action); remind user to `/model opus` before invoking
 
-**Checkpoint:** show me all four SKILL.md contents as a single preview before writing. After I approve, write all four files and stop.
+### Skill 2e: `grill-me`
+
+- **Frontmatter must include `context: fork`**.
+- **Trigger description:** *"Use when the user says 'grill me', wants to stress-test a plan, needs rigorous pre-implementation interrogation, or wants to resolve design ambiguity before building."*
+- **Content:** Relentless one-question-at-a-time design interrogation. Scans codebase before asking. Always provides a recommended answer. Walks every branch of the design tree top-down. Hands off to `planner` when done. Copy from the playbook's `skills/grill-me/SKILL.md` without modification.
+
+### Skill 2f: `security-grill-me`
+
+- **Frontmatter must include `context: fork`** — use Opus.
+- **Trigger description:** *"Use before planning any feature that handles authentication, authorization, user data, multi-tenancy, secrets, financial transactions, or external integrations. Interrogates the security design one question at a time until every threat vector is modeled."*
+- **Content:** Threat model interrogation across 8 domains: threat actors, trust boundaries, data classification, authentication, authorization, input/injection, secrets, audit. Scans codebase first. Always provides recommended answers. Produces threat model summary for the design doc's security section. Hands off to `planner` when done. Customize the project-specific section with CRITICAL_CONSTRAINTS. Based on playbook's `skills/security-grill-me/SKILL.md`.
+
+### Skill 2g: `debug`
+
+- **Frontmatter must include `context: fork`**.
+- **Trigger description:** *"Use when a test is failing, a production issue occurs, or unexpected behavior needs systematic root cause analysis."*
+- **Content:** Reproduce failure first, read code before hypothesizing, build hypothesis tree, binary search to root cause. Never writes fixes — hands off to `implementer` once root cause is confirmed. Copy from the playbook's `skills/debug/SKILL.md` without modification.
+
+**Checkpoint:** show me all seven SKILL.md contents as a single preview before writing. After I approve, write all seven files and stop.
 
 ---
 

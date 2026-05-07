@@ -5,7 +5,8 @@ A reusable workflow for bootstrapping new software projects with Claude Code fol
 ## Files in this folder
 
 - **`HOW-TO-USE.md`** — this file; read first
-- **`MASTER-PROMPT.md`** — the prompt template to adapt and paste into Claude Code
+- **`MASTER-PROMPT.md`** — the prompt template to adapt and paste into Claude Code for new projects
+- **`RESUME-PROMPT.md`** — the prompt template to paste when resuming a mid-project session
 - **`DESIGN-TEMPLATE.md`** — blank design doc skeleton; fill out before running the master prompt
 
 ## Prerequisite: write a DESIGN.md before initiating
@@ -58,7 +59,7 @@ Claude Code will execute 5 steps in order, pausing for approval between each:
 | Step | Output |
 |---|---|
 | 1 | Project-level `CLAUDE.md` |
-| 2 | Four project-scoped dev skills: `planner`, `implementer`, `reviewer`, `security-auditor` |
+| 2 | Seven project-scoped dev skills: `planner`, `implementer`, `reviewer`, `security-auditor`, `grill-me`, `security-grill-me`, `debug` |
 | 3 | Phase 0 scaffolding plan (plan mode, your approval via ExitPlanMode) |
 | 4 | Phase 0 code executed, tests passing, reviewer + security-auditor reports clean |
 | 5 | Phase 0 committed, closeout in DESIGN.md, PHASE-1.md seed created |
@@ -71,7 +72,7 @@ The auto-generated `PHASE-<n>.md` seed is the starting context for the next sess
 
 - **Design doc before code** — prevents drift and half-baked assumptions
 - **Project CLAUDE.md** — every future session loads conventions automatically
-- **Four dev skills** — planner/implementer/reviewer/security-auditor are version-controlled and shared
+- **Seven dev skills** — version-controlled and shared: planner, implementer, reviewer, security-auditor, grill-me, security-grill-me, debug
 - **Hard scope per phase** — exit criteria are concrete; each PR advances a specific criterion
 - **Plan-first mode** — no code without an approved plan
 

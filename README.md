@@ -12,11 +12,14 @@ A battle-tested methodology for shipping software products with Claude Code — 
 | [`templates/HOW-TO-USE.md`](templates/HOW-TO-USE.md) | Step-by-step project initiation workflow |
 | [`templates/MASTER-PROMPT.md`](templates/MASTER-PROMPT.md) | The 5-step initiation prompt — paste into Claude Code to bootstrap a new project |
 | [`templates/DESIGN-TEMPLATE.md`](templates/DESIGN-TEMPLATE.md) | Blank design doc skeleton — fill this out before running the master prompt |
+| [`templates/RESUME-PROMPT.md`](templates/RESUME-PROMPT.md) | Mid-project session resume template — orients Claude, verifies state, confirms direction before any new work |
 | [`skills/planner/`](skills/planner/SKILL.md) | Plans work before code is written; refuses to implement without approval |
 | [`skills/implementer/`](skills/implementer/SKILL.md) | Executes approved plans; test-first, small commits, scope-locked |
 | [`skills/reviewer/`](skills/reviewer/SKILL.md) | Code review for correctness, coverage, and performance |
 | [`skills/security-auditor/`](skills/security-auditor/SKILL.md) | Security review mirroring Claude's `/security-review` + the official GitHub Action |
 | [`skills/grill-me/`](skills/grill-me/SKILL.md) | Pre-implementation interrogation — resolves design ambiguity before any code is written |
+| [`skills/security-grill-me/`](skills/security-grill-me/SKILL.md) | Security threat model interrogation — surfaces attack surface, trust boundaries, and auth holes before planning |
+| [`skills/debug/`](skills/debug/SKILL.md) | Systematic root cause diagnosis — hypothesis tree, binary search, no guessing, never writes fixes |
 | [`hooks/validate-skill-frontmatter.sh`](hooks/validate-skill-frontmatter.sh) | PreToolUse hook that blocks malformed SKILL.md writes |
 | [`hooks/README.md`](hooks/README.md) | How to install hooks |
 
@@ -40,19 +43,21 @@ The master prompt walks Claude Code through five steps, with approval gates betw
 
 Each step produces a checkpoint. You review and say "proceed." No runaway agents.
 
-### Five-skill development triad
+### Development skill suite
 
 Instead of one monolithic "do everything" prompt, split responsibilities into focused skills:
 
 | Role / Persona | Role | When |
 |---|---|---|
 | **grill-me** | Interrogates design assumptions; one question at a time until mutual understanding | Before planning — when requirements feel vague |
-| **Planner** | Breaks requests into plans; refuses to code without approval | Before any non-trivial implementation |
-| **Implementer** | Writes code following the plan; test-first, scope-locked | After plan is approved |
-| **Reviewer** | Correctness, coverage, performance review | Before PR / milestone close |
-| **Security Auditor** | Vulnerability scan mirroring official Claude tools | After reviewer, before merge |
+| **security-grill-me** | Interrogates threat model across 8 security domains | Before planning — when the feature touches auth, data, or tenancy |
+| **planner** | Breaks requests into plans; refuses to code without approval | Before any non-trivial implementation |
+| **implementer** | Writes code following the plan; test-first, scope-locked | After plan is approved |
+| **reviewer** | Correctness, coverage, performance review | Before PR / milestone close |
+| **security-auditor** | Vulnerability scan mirroring official Claude tools | After reviewer, before merge |
+| **debug** | Hypothesis tree → binary search → root cause; never writes fixes | When tests fail or production breaks |
 
-All five use `context: fork` — they run in isolated subagent contexts, preserving the main session's context window.
+All seven use `context: fork` — they run in isolated subagent contexts, preserving the main session's context window.
 
 ### Phase-gated delivery
 

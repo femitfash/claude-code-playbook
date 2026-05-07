@@ -50,7 +50,7 @@ context: fork                 # optional — see below
 ### Context forking
 Add `context: fork` for skills that do substantial isolated work (planning, implementation runs, reviews). The skill executes in a subagent, preserving the main conversation's context window.
 
-- **Fork**: planner, implementer, reviewer, security-auditor, deep-research skills
+- **Fork**: planner, implementer, reviewer, security-auditor, grill-me, security-grill-me, debug, deep-research skills
 - **Don't fork**: quick-reference skills, lookups, templates, short how-tos
 
 ### Content quality
