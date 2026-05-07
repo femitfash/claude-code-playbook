@@ -75,6 +75,20 @@ The auto-generated `PHASE-<n>.md` seed is the starting context for the next sess
 - **Hard scope per phase** — exit criteria are concrete; each PR advances a specific criterion
 - **Plan-first mode** — no code without an approved plan
 
+## Documenting skills in your project CLAUDE.md
+
+When you create a skill roster table in a project-level `CLAUDE.md`, use **"Role / Persona"** as the column header — not "Invoke" or "Slash Command":
+
+| Role / Persona | Scope |
+|---|---|
+| planner | Phase planning, refuses to write code |
+| implementer | Executes approved plans, test-first |
+| reviewer | Pre-PR correctness & coverage |
+| security-auditor | Vulnerability review, blocks on CRITICAL |
+| grill-me | Pre-implementation interrogation |
+
+**Why:** Skills activate by Claude matching your request to the skill's `description` field. They are not native CLI slash commands (which are built-in: `/compact`, `/model`, `/rewind`). Labeling them "slash commands" in docs creates confusion about how activation works.
+
 ## Do not
 
 - Run the master prompt without a DESIGN.md

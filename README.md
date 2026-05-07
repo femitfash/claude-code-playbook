@@ -16,6 +16,7 @@ A battle-tested methodology for shipping software products with Claude Code — 
 | [`skills/implementer/`](skills/implementer/SKILL.md) | Executes approved plans; test-first, small commits, scope-locked |
 | [`skills/reviewer/`](skills/reviewer/SKILL.md) | Code review for correctness, coverage, and performance |
 | [`skills/security-auditor/`](skills/security-auditor/SKILL.md) | Security review mirroring Claude's `/security-review` + the official GitHub Action |
+| [`skills/grill-me/`](skills/grill-me/SKILL.md) | Pre-implementation interrogation — resolves design ambiguity before any code is written |
 | [`hooks/validate-skill-frontmatter.sh`](hooks/validate-skill-frontmatter.sh) | PreToolUse hook that blocks malformed SKILL.md writes |
 | [`hooks/README.md`](hooks/README.md) | How to install hooks |
 
@@ -39,18 +40,19 @@ The master prompt walks Claude Code through five steps, with approval gates betw
 
 Each step produces a checkpoint. You review and say "proceed." No runaway agents.
 
-### Four-skill development triad
+### Five-skill development triad
 
 Instead of one monolithic "do everything" prompt, split responsibilities into focused skills:
 
-| Skill | Role | When |
+| Role / Persona | Role | When |
 |---|---|---|
+| **grill-me** | Interrogates design assumptions; one question at a time until mutual understanding | Before planning — when requirements feel vague |
 | **Planner** | Breaks requests into plans; refuses to code without approval | Before any non-trivial implementation |
 | **Implementer** | Writes code following the plan; test-first, scope-locked | After plan is approved |
 | **Reviewer** | Correctness, coverage, performance review | Before PR / milestone close |
 | **Security Auditor** | Vulnerability scan mirroring official Claude tools | After reviewer, before merge |
 
-All four use `context: fork` — they run in isolated subagent contexts, preserving the main session's context window.
+All five use `context: fork` — they run in isolated subagent contexts, preserving the main session's context window.
 
 ### Phase-gated delivery
 
