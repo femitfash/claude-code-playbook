@@ -63,3 +63,11 @@ Add `context: fork` for skills that do substantial isolated work (planning, impl
 - Remove stale skills rather than leaving them
 - When renaming, rename both the directory and the `name:` field
 - Check for duplicates before creating new skills
+
+## Context & Session Handoff
+- **Active Plan**: Always check `.claude/plans/current-task.md` (or the most recent file in that directory) to understand the current work state.
+- **Resuming**: When starting a new session, the developer will likely say "continue" or "next step." Refer to the Active Plan to identify the current objective.
+- **Memory**: Use `/compact` before ending a session to summarize progress. This summary is automatically available to new sessions via the system's background memory.
+
+## Agent Collaboration
+When documenting skills in a table (e.g., a role roster in a project `CLAUDE.md`), use **"Role / Persona"** as the column header — not "Invoke" or "Slash Command." Skills are custom personas activated by description matching, not native CLI commands. Native slash commands (`/compact`, `/model`, `/rewind`) are a distinct built-in mechanism.
