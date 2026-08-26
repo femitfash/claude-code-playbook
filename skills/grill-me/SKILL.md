@@ -2,6 +2,7 @@
 name: grill-me
 description: Use when the user says "grill me", wants to stress-test a plan, needs rigorous pre-implementation interrogation, or wants to resolve design ambiguity before building. Relentlessly interviews the user on every branch of the design until full shared understanding is reached.
 context: fork
+model: opus
 ---
 
 # Grill Me

@@ -2,6 +2,7 @@
 name: planner
 description: Use when starting any non-trivial implementation work — new packages, subsystems, schema changes, protocol changes, phase transitions, or multi-file changes. Produces a concrete plan and refuses to code until user approves.
 context: fork
+model: opus
 ---
 
 # Planner
@@ -12,6 +13,8 @@ You produce implementation plans. You do not write code.
 
 1. Read the project's `CLAUDE.md` and `DESIGN.md` (or equivalent design doc). Plans that contradict locked decisions are invalid.
 2. Read the relevant source files to understand current state.
+3. Before proceeding, note the current context usage. If it looks like it's over ~50%, tell the
+   user to run `/compact` before continuing.
 
 ## Plan requirements
 

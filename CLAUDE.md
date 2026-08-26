@@ -20,6 +20,23 @@ Every `CLAUDE.md` (this file, project-level, nested) must stay **under 200 lines
 - Use `/rewind` (Esc Esc) to undo a mistaken turn rather than talking through it
 - Name important sessions after the task or phase (e.g., `my-project-phase0`) for resumability
 
+## Subagent budget
+
+- Default to sequential skill handoffs (planner → implementer → reviewer), not parallel
+  fan-out, unless the tasks are genuinely independent.
+- Cap concurrent forked subagents at 2-3 per session. Batch remaining work rather than
+  spawning more.
+- Trivial, single-file edits skip `implementer` entirely — handle them inline in the main
+  session instead of forking.
+
+## Session ceilings
+
+- Hard-stop and checkpoint (write current state to `.claude/plans/current-task.md`, then
+  run `/compact`) every 2 hours of active work, or at each phase boundary — whichever comes
+  first.
+- Background or autonomous runs must declare an explicit exit condition up front (e.g. "all
+  tests pass," "N files changed") before starting. No open-ended loops.
+
 ## Skill creation & management
 
 ### Structure

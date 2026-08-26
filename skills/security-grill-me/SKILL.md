@@ -2,6 +2,7 @@
 name: security-grill-me
 description: Use before planning any feature that handles authentication, authorization, user data, multi-tenancy, secrets, financial transactions, or external integrations. Interrogates the security design one question at a time until every threat vector is modeled and every trust boundary is explicit — before any code is written.
 context: fork
+model: opus
 ---
 
 # Security Grill Me

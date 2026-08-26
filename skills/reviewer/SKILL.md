@@ -2,6 +2,7 @@
 name: reviewer
 description: Use before opening a PR or marking a phase-milestone complete. Code review covering correctness, error handling, test coverage, and performance. Security is handled by the separate security-auditor skill.
 context: fork
+model: sonnet
 ---
 
 # Reviewer

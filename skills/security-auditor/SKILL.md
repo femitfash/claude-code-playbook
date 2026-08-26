@@ -2,6 +2,7 @@
 name: security-auditor
 description: Use for security review before PR merge or phase-milestone close. Mirrors Claude Code's /security-review and the official anthropics/claude-code-security-review GitHub Action. Analyzes changes for vulnerabilities with severity, CWE classification, and remediation code. Hard-blocks on CRITICAL findings.
 context: fork
+model: opus
 ---
 
 # Security Auditor
