@@ -57,11 +57,18 @@ printf '#!/bin/bash\nexit 1\n' > "$T/p/.claude/verify.sh"
 check "PLAYBOOK_VERIFY_DISABLE=1 skips" "[ \"\$(PLAYBOOK_VERIFY_DISABLE=1 run)\" = 0 ]"
 check "missing session_id still works" "[ \"\$(printf '{}' | \"$H\" >/dev/null 2>&1; echo \$?)\" = 2 ]"
 rm -rf "$T"
+# The hook section pointed these at $T, which is now gone; later sections must not inherit them.
+unset TMPDIR CLAUDE_PROJECT_DIR
 
 echo "Outcome checks (evals/check-outcomes.sh)"
 check "outcome checker is executable" "[ -x evals/check-outcomes.sh ]"
 check "hidden tests are not in any fixture" "! grep -rq 'hidden_test' evals/*/fixture.sh"
-check "outcomes self-test: good passes, bad fails" "tests/outcomes-selftest.sh"
+if st_out="$(tests/outcomes-selftest.sh 2>&1)"; then
+  ok "outcomes self-test: good passes, bad fails"
+else
+  bad "outcomes self-test: good passes, bad fails"
+  printf '%s\n' "$st_out" | sed 's/^/       /'
+fi
 
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then
