@@ -1,6 +1,6 @@
 {
   "name": "playbook",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Design-first, phase-gated workflow for Claude Code: design-doc interrogation, planning, scoped implementation, review gate, and session resume.",
   "author": { "name": "femitfash" },
   "repository": "https://github.com/femitfash/claude-code-playbook",

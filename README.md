@@ -22,15 +22,22 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `/playbook:implementer` | Execute an approved plan, test-first, scope-locked (user-invoked only) |
 | `/playbook:phase-gate` | Tests + `/code-review` + `/security-review` + project constraints, then PASS/BLOCK |
 | `/playbook:debug` | Read-only root-cause diagnosis; never writes fixes |
+| `/playbook:quick-fix` | Light path for bug fixes, small changes and legacy code: no design doc or gates |
 | `/playbook:project-init` | 5-step approval-gated bootstrap from a `DESIGN.md` |
 | `/playbook:resume` | Orient, verify, confirm direction at session start |
 
 | File | Purpose |
 |---|---|
 | `skills/project-init/DESIGN-TEMPLATE.md` | Blank design doc; fill in before `project-init` |
-| `templates/settings.baseline.json` | Permission deny/ask rules to copy into `.claude/settings.json` |
-| `templates/verify.sh.example` | Copy to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails |
+| `templates/settings.baseline.json` | Permission deny/ask rules to copy into `.claude/settings.json`. Guardrails, not a boundary: read `templates/SETTINGS-NOTES.md` and add a sandbox |
+| `templates/verify.sh.example` | Copy to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session (`PLAYBOOK_VERIFY_MAX_RETRIES`; `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
 | `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
+
+## Which path?
+
+- **Greenfield project or a large, ambiguous feature:** full path below (`project-init`, `grill-me`, `planner`, `implementer`, `phase-gate`).
+- **Bug fix, small change, or legacy code:** `/playbook:quick-fix` (and `/playbook:debug` if the cause is unclear).
+- **Resuming:** `claude --continue`, or `/playbook:resume` if the conversation is gone.
 
 ## The method
 
