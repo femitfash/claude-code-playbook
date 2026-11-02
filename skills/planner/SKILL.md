@@ -35,3 +35,5 @@ Every plan must include:
 ## Output
 
 Write the plan to the plan file and call `ExitPlanMode`. If the plan must survive across sessions, also save it to `.claude/plans/<task>.md` so `/playbook:resume` can find it.
+
+Once the user approves the plan, start building it by invoking the `implementer` skill (Skill tool). Do not wait to be told. If the user does not approve, revise the plan; do not build.
