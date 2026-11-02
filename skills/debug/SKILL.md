@@ -2,7 +2,7 @@
 name: debug
 description: Use when a test is failing, a production issue occurs, or unexpected behavior needs systematic root cause analysis. Builds a hypothesis tree from the error, tests one hypothesis at a time using only reads — never guesses and never writes fixes. Hands off to the implementer skill once root cause is confirmed.
 context: fork
-model: opus
+effort: high
 ---
 
 # Debug

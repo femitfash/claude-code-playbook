@@ -1,0 +1,12 @@
+{
+  "name": "claude-code-playbook",
+  "owner": { "name": "femitfash" },
+  "description": "Design-first, phase-gated workflows for Claude Code.",
+  "plugins": [
+    {
+      "name": "playbook",
+      "source": "./",
+      "description": "Design-first, phase-gated workflow for Claude Code."
+    }
+  ]
+}

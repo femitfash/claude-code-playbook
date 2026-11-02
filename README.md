@@ -1,151 +1,49 @@
 # Claude Code Playbook
 
-A battle-tested methodology for shipping software products with Claude Code — from architecture to production.
+A design-first, phase-gated workflow for shipping software with Claude Code, packaged as a plugin.
 
-**This is not a feature guide.** If you want to learn what Claude Code can do, see the [official docs](https://code.claude.com/docs) or [claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice). This repo answers a different question: **how do you reliably use Claude Code to ship a product?**
+It doesn't re-document features. For those, read the official [best practices](https://code.claude.com/docs/en/best-practices). This repo adds the project-level process on top: design doc, interrogation, planning, scoped implementation, review gate, resume.
+
+## Install
+
+```
+/plugin install playbook --marketplace femitfash/claude-code-playbook
+```
+
+(or `claude plugin marketplace add femitfash/claude-code-playbook`, then `claude plugin install playbook@claude-code-playbook`)
 
 ## What's inside
 
-| Path | What it is |
+| Skill | Use |
 |---|---|
-| [`CLAUDE.md`](CLAUDE.md) | Global conventions — drop into `~/.claude/CLAUDE.md` to load in every session |
-| [`templates/HOW-TO-USE.md`](templates/HOW-TO-USE.md) | Step-by-step project initiation workflow |
-| [`templates/MASTER-PROMPT.md`](templates/MASTER-PROMPT.md) | The 5-step initiation prompt — paste into Claude Code to bootstrap a new project |
-| [`templates/DESIGN-TEMPLATE.md`](templates/DESIGN-TEMPLATE.md) | Blank design doc skeleton — fill this out before running the master prompt |
-| [`templates/RESUME-PROMPT.md`](templates/RESUME-PROMPT.md) | Mid-project session resume template — orients Claude, verifies state, confirms direction before any new work |
-| [`skills/planner/`](skills/planner/SKILL.md) | Plans work before code is written; refuses to implement without approval |
-| [`skills/implementer/`](skills/implementer/SKILL.md) | Executes approved plans; test-first, small commits, scope-locked |
-| [`skills/reviewer/`](skills/reviewer/SKILL.md) | Code review for correctness, coverage, and performance |
-| [`skills/security-auditor/`](skills/security-auditor/SKILL.md) | Security review mirroring Claude's `/security-review` + the official GitHub Action |
-| [`skills/grill-me/`](skills/grill-me/SKILL.md) | Pre-implementation interrogation — resolves design ambiguity before any code is written |
-| [`skills/security-grill-me/`](skills/security-grill-me/SKILL.md) | Security threat model interrogation — surfaces attack surface, trust boundaries, and auth holes before planning |
-| [`skills/debug/`](skills/debug/SKILL.md) | Systematic root cause diagnosis — hypothesis tree, binary search, no guessing, never writes fixes |
-| [`hooks/validate-skill-frontmatter.sh`](hooks/validate-skill-frontmatter.sh) | PreToolUse hook that blocks malformed SKILL.md writes |
-| [`hooks/README.md`](hooks/README.md) | How to install hooks |
+| `/playbook:grill-me` | Interview you on a vague design, one question at a time, until resolved |
+| `/playbook:security-grill-me` | Same, for threat modeling (auth, data, tenancy, secrets) |
+| `/playbook:planner` | Phase-scoped plan template; run in plan mode |
+| `/playbook:implementer` | Execute an approved plan, test-first, scope-locked (user-invoked only) |
+| `/playbook:phase-gate` | Tests + `/code-review` + `/security-review` + project constraints, then PASS/BLOCK |
+| `/playbook:debug` | Read-only root-cause diagnosis; never writes fixes |
+| `/playbook:project-init` | 5-step approval-gated bootstrap from a `DESIGN.md` |
+| `/playbook:resume` | Orient, verify, confirm direction at session start |
 
-## The methodology
+| File | Purpose |
+|---|---|
+| `skills/project-init/DESIGN-TEMPLATE.md` | Blank design doc; fill in before `project-init` |
+| `templates/settings.baseline.json` | Permission deny/ask rules to copy into `.claude/settings.json` |
+| `templates/verify.sh.example` | Copy to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails |
+| `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
 
-### Design-first, not vibe-first
+## The method
 
-Every project starts with a **design document** — locked architectural decisions, phased delivery plan with exit criteria, decision log. Claude Code sessions consume the design doc; they don't replace it.
+1. **Design first.** A `DESIGN.md` with locked decisions, phases and exit criteria is the source of truth across sessions.
+2. **Interrogate, then plan.** `grill-me` removes ambiguity; `planner` (plan mode) gets approval before any code.
+3. **Implement narrowly.** Test-first, small commits, no scope creep.
+4. **Gate.** `phase-gate` must pass before a PR or phase close.
+5. **Enforce, don't just advise.** Rules that can't have exceptions live in permission rules and hooks, not in prose.
+6. **Close phases.** Update the decision log, seed the next phase, then move on.
 
-Why: without a design doc, each Claude Code session re-derives architecture from scratch. You get inconsistent decisions, scope creep, and sessions that contradict each other. A design doc is the single source of truth that survives across sessions.
+## Maintenance
 
-### 5-step project initiation
-
-The master prompt walks Claude Code through five steps, with approval gates between each:
-
-1. **Create project CLAUDE.md** — conventions, links to design doc, hard constraints
-2. **Create four dev skills** — planner, implementer, reviewer, security-auditor
-3. **Plan Phase 0** in plan mode — scoped to the design doc's exit criteria
-4. **Execute and verify** — test-first implementation, reviewer + security-auditor pass
-5. **Commit and close** — clean git history, decision log updated, next-phase seed created
-
-Each step produces a checkpoint. You review and say "proceed." No runaway agents.
-
-### Development skill suite
-
-Instead of one monolithic "do everything" prompt, split responsibilities into focused skills:
-
-| Role / Persona | Role | When |
-|---|---|---|
-| **grill-me** | Interrogates design assumptions; one question at a time until mutual understanding | Before planning — when requirements feel vague |
-| **security-grill-me** | Interrogates threat model across 8 security domains | Before planning — when the feature touches auth, data, or tenancy |
-| **planner** | Breaks requests into plans; refuses to code without approval | Before any non-trivial implementation |
-| **implementer** | Writes code following the plan; test-first, scope-locked | After plan is approved |
-| **reviewer** | Correctness, coverage, performance review | Before PR / milestone close |
-| **security-auditor** | Vulnerability scan mirroring official Claude tools | After reviewer, before merge |
-| **debug** | Hypothesis tree → binary search → root cause; never writes fixes | When tests fail or production breaks |
-
-All seven use `context: fork` — they run in isolated subagent contexts, preserving the main session's context window.
-
-### Phase-gated delivery
-
-Work is organized into phases with explicit, measurable exit criteria. A phase is closed (committed, documented) before the next one opens. This prevents scope creep and makes progress visible.
-
-## Practices adopted and where they came from
-
-This playbook synthesizes three sources:
-
-### Internal methodology (original to this repo)
-- Design-doc-first workflow
-- 5-step project initiation template with approval gates
-- Four-skill dev triad (planner / implementer / reviewer / security-auditor)
-- Phase-gated delivery with exit criteria
-- Auto-memory strategy for persisting architectural decisions across sessions
-- Master prompt as a reusable, editable template
-
-### Anthropic official tools
-- [Plan mode](https://code.claude.com/docs) for structured planning with `ExitPlanMode` approval
-- [`/security-review`](https://code.claude.com/docs/en/security) command — the security-auditor skill mirrors its methodology
-- [`anthropics/claude-code-security-review`](https://github.com/anthropics/claude-code-security-review) GitHub Action — the security-auditor skill mirrors its vulnerability taxonomy and output format
-- Skills architecture (`SKILL.md` with frontmatter, context forking, progressive disclosure)
-- `AskUserQuestion` tool for forcing decisions before implementation
-
-### Community practices (from [claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice))
-- CLAUDE.md length discipline — under 200 lines, 60 optimal
-- `context: fork` for skills that do substantial isolated work
-- Model selection strategy — Opus for planning, Sonnet for implementation
-- `/compact` at 50% context to avoid degradation
-- Session naming for resumability
-- PreToolUse hooks for enforcement (not just advisory rules)
-
-## Quick start
-
-### 1. Install global conventions
-
-Copy `CLAUDE.md` to your Claude Code config:
-
-```bash
-cp CLAUDE.md ~/.claude/CLAUDE.md
-```
-
-### 2. Install the hook
-
-Add the skill-validation hook to your settings:
-
-```bash
-cp hooks/validate-skill-frontmatter.sh ~/.claude/hooks/
-```
-
-Then add to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$HOME/.claude/hooks/validate-skill-frontmatter.sh\""
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### 3. Start a new project
-
-1. Fill out [`templates/DESIGN-TEMPLATE.md`](templates/DESIGN-TEMPLATE.md) for your project
-2. Copy the four skills from `skills/` into your project's `.claude/skills/`
-3. Open Claude Code in your project directory
-4. Paste the contents of [`templates/MASTER-PROMPT.md`](templates/MASTER-PROMPT.md) (edit the top fields first)
-5. Approve each step as Claude progresses
-
-See [`templates/HOW-TO-USE.md`](templates/HOW-TO-USE.md) for the full walkthrough.
-
-## Philosophy
-
-- **Design before code.** Architecture decisions in a doc, not in a chat.
-- **Plan before implement.** No code without an approved plan.
-- **Verify before merge.** Reviewer + security auditor, every time.
-- **Phase before scope creep.** Explicit exit criteria; close phases, don't let them drift.
-- **Advisory is not enforcement.** Use hooks where rules must be mandatory.
-- **Context is finite.** Manage it actively — fork skills, compact early, name sessions.
+Run `claude plugin validate --strict .` after changes. See [docs/MIGRATION.md](docs/MIGRATION.md) for what changed from v1 and why. Re-audit against the official docs every quarter or so; they move quickly.
 
 ## License
 

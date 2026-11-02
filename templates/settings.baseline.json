@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(curl * | sh)",
+      "Bash(curl * | bash)"
+    ],
+    "ask": [
+      "Bash(git push *)"
+    ],
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ]
+  }
+}
