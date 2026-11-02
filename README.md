@@ -40,11 +40,14 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `templates/verify.sh.example` (npm), `verify.python.sh.example`, `verify.go.sh.example`, `verify.rust.sh.example` | Copy the one for your stack to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session. It runs only when the working tree changed since the last passing run (`PLAYBOOK_VERIFY_ALWAYS=1` to run on every stop, `PLAYBOOK_VERIFY_MAX_RETRIES` to change the cap, `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
 | `templates/settings.sandbox.json` | Sandbox settings to merge into `.claude/settings.json`: sandbox on, no opt-out, network limited to package registries. The real boundary; the permission rules above are guardrails |
 | `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
+| `templates/AI-LOG.md` | Template and rules for logging how you used AI (asked / got / kept-changed-rejected / why), for READMEs and reviews that ask for it |
+| [`docs/TIMEBOXED.md`](docs/TIMEBOXED.md) | A minute-by-minute plan for a 30-minute build, and which skills to skip |
 
 ## Which path?
 
 - **Greenfield project or a large, ambiguous feature:** full path below (`project-init`, `grill-me`, `planner`, `implementer`, `phase-gate`).
 - **Bug fix, small change, or legacy code:** `/playbook:quick-fix` (and `/playbook:debug` if the cause is unclear).
+- **A hard time limit (for example a 30-minute challenge):** [`docs/TIMEBOXED.md`](docs/TIMEBOXED.md).
 - **Resuming:** `claude --continue`, or `/playbook:resume` if the conversation is gone.
 
 ## Example: starting a new project

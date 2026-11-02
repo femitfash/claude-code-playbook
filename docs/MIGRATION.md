@@ -36,6 +36,14 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): AI log and time box
+
+| Change | Why |
+|---|---|
+| `templates/AI-LOG.md` | The playbook had nothing for documenting AI use, which reviews of AI-assisted work score. Rules: only real interactions, complete entries, specific over polished; a copyable notes block, a three-part pushback structure, and a clearly labelled made-up example. |
+| `docs/TIMEBOXED.md` | The full path does not fit a hard time limit. A minute-by-minute plan for a 30-minute build, which skills to skip, and what the playbook does not do for you. |
+| README: both linked, plus a "hard time limit" route in "Which path?" | Discoverability. |
+
 # v3.0 (in progress): phase-gate fix
 
 | Change | Why |
