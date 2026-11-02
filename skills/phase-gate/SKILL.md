@@ -1,7 +1,6 @@
 ---
 name: phase-gate
-description: Use before opening a PR or closing a phase milestone. Runs the review gate (the bundled /code-review and /security-review when they can be run, otherwise a direct review of the diff, plus project-specific checks) and decides pass or block.
-disable-model-invocation: true
+description: Use when an implementation of an approved plan is finished, before reporting it done, and before opening a PR or closing a phase milestone. Runs the review gate (the bundled /code-review and /security-review when they can be run, otherwise a direct review of the diff, plus project-specific checks) and decides pass or block.
 context: fork
 ---
 

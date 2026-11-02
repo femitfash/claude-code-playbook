@@ -25,9 +25,13 @@ for f in skills/*/SKILL.md; do
 done
 check "debug: edit tools disabled" "fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Edit && fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Write"
 check "debug: read-only guard hook is wired and executable" "fm skills/debug/SKILL.md | grep -q 'readonly-guard.sh' && [ -x skills/debug/readonly-guard.sh ]"
+check "implementer and phase-gate can be invoked by the model" "! fm skills/implementer/SKILL.md | grep -q '^disable-model-invocation' && ! fm skills/phase-gate/SKILL.md | grep -q '^disable-model-invocation'"
+check "implementer requires an approved plan before starting" "grep -q 'Start only when an approved plan exists' skills/implementer/SKILL.md"
+check "implementer hands off to phase-gate with a fix-cycle cap" "grep -q 'phase-gate' skills/implementer/SKILL.md && grep -q 'at most \*\*2 times\*\*' skills/implementer/SKILL.md"
+check "planner hands off to implementer only after approval" "grep -q 'invoking the \`implementer\` skill' skills/planner/SKILL.md && grep -q 'do not build' skills/planner/SKILL.md"
 check "phase-gate: reports which reviews actually ran" "grep -q 'Reviews run:' skills/phase-gate/SKILL.md && grep -q 'Never say a bundled review ran if it did not' skills/phase-gate/SKILL.md"
 check "phase-gate: runs in a fresh forked context" "fm skills/phase-gate/SKILL.md | grep -qE '^context:[[:space:]]*fork'"
-for s in implementer phase-gate resume project-init; do
+for s in resume project-init; do
   check "$s: user-invoked only" "fm skills/$s/SKILL.md | grep -qE '^disable-model-invocation:[[:space:]]*true'"
 done
 

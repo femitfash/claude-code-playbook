@@ -36,6 +36,17 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): automatic chain
+
+| Change | Why |
+|---|---|
+| `implementer` and `phase-gate` no longer set `disable-model-invocation` | v2 made them user-only so Claude would never build unprompted. For a run where you approve the plan with Claude Code's normal plan-mode approval and want the rest to run itself, that meant typing two commands. Plan-mode approval is the gate now. |
+| `planner`: after approval, invoke `implementer`; if not approved, revise and do not build | The chain starts at your approval. |
+| `implementer`: starts only with an approved plan; on completion invokes `phase-gate`; on BLOCK fixes and re-runs, at most 2 times, then stops and reports | Automatic, but bounded, and never without an approved plan. |
+| `phase-gate`: description now says it runs when an implementation is finished | So it triggers without being typed. |
+| `resume` and `project-init` stay user-only | They are session starters you choose to run. |
+| Not guaranteed | Claude does not always invoke a skill when it should (`quick-fix` initially never did). If a handoff does not fire, type the skill. |
+
 # v3.0 (in progress): AI log and time box
 
 | Change | Why |

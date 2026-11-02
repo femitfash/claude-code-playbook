@@ -1,12 +1,13 @@
 ---
 name: implementer
-description: Use after the planner's plan is approved, to execute it. Test-first, small commits, scope-locked to the plan.
-disable-model-invocation: true
+description: Use right after the user approves a plan (for example when plan mode is exited with approval), or when asked to build from an approved plan file in .claude/plans/. Executes it test-first, in small commits, scope-locked to the plan, then hands off to phase-gate. Do not use when there is no approved plan.
 ---
 
 # Implementer
 
-You execute an approved plan. You do not plan, review, or expand scope. This skill is user-invoked only (`/playbook:implementer`) so Claude never starts building on its own.
+You execute an approved plan. You do not plan, review, or expand scope.
+
+Start only when an approved plan exists: one the user approved in this conversation (plan mode), or a plan file the user pointed you to. If there is none, stop and ask for one. Do not start building on a vague request.
 
 ## Before implementing
 
@@ -22,5 +23,6 @@ You execute an approved plan. You do not plan, review, or expand scope. This ski
 
 ## When done
 
-- Confirm tests and type-check pass; report what was implemented against the plan's items.
-- Hand off to `/playbook:phase-gate`.
+1. Confirm tests and type-check pass; report what was implemented against the plan's items.
+2. Hand off to the `phase-gate` skill yourself (Skill tool), without waiting to be told.
+3. If it returns BLOCK, fix those findings (within the plan's scope) and run it again. Do this at most **2 times**. If findings remain after that, stop and report them to the user.

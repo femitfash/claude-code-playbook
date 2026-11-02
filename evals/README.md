@@ -88,7 +88,7 @@ Every skill now has at least one in-sample case here and one held-out case in [`
 | `project-init` | `project-init-gated` | `holdout-project-init` | conformance |
 
 - **Lift cases** use a natural prompt that does not name the skill, so the no-plugin arm is a fair baseline.
-- **Conformance cases** start with `/playbook:<skill>`. Those four skills are user-invoked only (a model cannot start them), so there is no meaningful baseline. They check that the skill behaves as written when invoked. Do not report lift from them.
+- **Conformance cases** start with `/playbook:<skill>`. `resume` and `project-init` are user-invoked only, and `implementer` and `phase-gate` were until the auto-chain change, so these cases use a slash command and there is no meaningful baseline. They check that the skill behaves as written when invoked. Do not report lift from them. Natural-prompt cases for `implementer` and `phase-gate` (which can now start on their own) are future work.
 - Outcome checks (`check-outcomes.sh`) exist for every case, and `tests/outcomes-selftest.sh` proves they pass good results and fail bad ones.
 - `tests/run.sh` fails CI if a skill loses its in-sample or held-out case, or if any held-out file changes (see `holdout/FROZEN.sha256`).
 

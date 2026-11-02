@@ -26,8 +26,8 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `/playbook:grill-me` | Interview you on a vague design, one question at a time, until resolved |
 | `/playbook:security-grill-me` | Same, for threat modeling (auth, data, tenancy, secrets) |
 | `/playbook:planner` | Phase-scoped plan template; run in plan mode |
-| `/playbook:implementer` | Execute an approved plan, test-first, scope-locked (user-invoked only) |
-| `/playbook:phase-gate` | Tests + code review + security review (the bundled `/code-review` and `/security-review` when they can be run, otherwise a direct review that says so) + project constraints, then PASS/BLOCK; runs in a fresh forked context |
+| `/playbook:implementer` | Execute an approved plan, test-first, scope-locked; starts by itself once you approve a plan, and hands off to `phase-gate` |
+| `/playbook:phase-gate` | Tests + code review + security review (the bundled `/code-review` and `/security-review` when they can be run, otherwise a direct review that says so) + project constraints, then PASS/BLOCK; runs in a fresh forked context; runs by itself when `implementer` finishes |
 | `/playbook:debug` | Root-cause diagnosis; a guard hook blocks the edit tools and common Bash file writes (not a sandbox) |
 | `/playbook:quick-fix` | Light path for bug fixes, small changes and legacy code: no design doc or gates |
 | `/playbook:project-init` | 5-step approval-gated bootstrap from a `DESIGN.md` |
