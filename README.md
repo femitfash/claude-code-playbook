@@ -12,6 +12,13 @@ It doesn't re-document features. For those, read the official [best practices](h
 
 (or `claude plugin marketplace add femitfash/claude-code-playbook`, then `claude plugin install playbook@claude-code-playbook`)
 
+## Quick start
+
+1. Install the plugin (above).
+2. In your project, copy the `templates/verify.*.sh.example` for your stack to `.claude/verify.sh` (and `chmod +x`), and merge `templates/settings.baseline.json` and `templates/settings.sandbox.json` into `.claude/settings.json`.
+3. Give Claude a real bug: `/playbook:quick-fix <what is broken>`. It reproduces, writes a failing test, makes the smallest fix and runs the tests.
+4. For a new project or a large feature, follow [the new-project example](#example-starting-a-new-project) below.
+
 ## What's inside
 
 | Skill | Use |
@@ -116,11 +123,21 @@ Resolve every BLOCK finding before opening the PR. For features touching auth, c
 5. **Enforce, don't just advise.** Rules that can't have exceptions live in permission rules and hooks, not in prose.
 6. **Close phases.** Update the decision log, seed the next phase, then move on.
 
+## What this does not cover
+
+- **Prompt injection.** Text Claude reads (web pages, issues, dependency READMEs, tool output) can carry instructions. Permission rules and the debug guard do not stop that. The sandbox's network allowlist limits the damage; review what you let Claude fetch.
+- **Supply chain.** Package installs and their scripts run code. Pin and review dependencies; the sandbox limits what that code can reach but does not vet it.
+- **Unattended runs.** The skills expect a person at the approval points. `project-init`, `grill-me` and `resume` ask questions; in headless mode they stop or guess. The Stop hook's retry cap prevents loops, not bad results.
+- **Secrets.** Deny rules match command text and are easy to route around. Keep secrets out of the working tree.
+- **Model variability.** Skills are prompts, not programs. The same skill can behave differently across models and runs; see [`evals/`](evals/README.md) for what has and has not been measured.
+- **Windows.** The hooks are bash scripts.
+
 ## Evidence
 
 - [`evals/`](evals/README.md): behavioural evals with a with/without-plugin comparison, and the results of the runs so far, including what they got wrong.
 - [`docs/examples/`](docs/examples/README.md): worked examples (real command output from the eval fixtures, plus clearly labelled illustrative ones).
-- `tests/run.sh`: deterministic checks (skill lint, settings baseline, Stop hook behaviour, `claude plugin validate --strict`). No model needed.
+- `tests/run.sh`: deterministic checks (skill lint, settings baseline, Stop hook behaviour, debug guard, eval coverage, frozen held-out set, `claude plugin validate --strict`). No model needed.
+- [`docs/SCORECARD.md`](docs/SCORECARD.md): the v3.0 success criteria and which are met, partly met, or not yet measured.
 
 ## Maintenance
 
