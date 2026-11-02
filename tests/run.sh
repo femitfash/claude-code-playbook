@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deterministic checks for the playbook (no model needed). Run: tests/run.sh
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 fail=0; pass=0
 ok()   { pass=$((pass+1)); echo "  ok   $1"; }
 bad()  { fail=$((fail+1)); echo "  FAIL $1"; }
@@ -13,7 +13,7 @@ echo "Skills"
 for f in skills/*/SKILL.md; do
   d="$(basename "$(dirname "$f")")"
   front="$(fm "$f")"
-  check "$d: name matches directory" "printf '%s' \"\$front\" | grep -qE '^name:[[:space:]]*$d[[:space:]]*\$'"
+  check "$d: name matches directory" "printf '%s' \"\$front\" | grep -qE '^name:[[:space:]]*${d}[[:space:]]*\$'"
   check "$d: has description" "printf '%s' \"\$front\" | grep -qE '^description:[[:space:]]*.+'"
   check "$d: README lists /playbook:$d" "grep -q '/playbook:$d' README.md"
   # No pinned model versions in skills.
@@ -57,6 +57,18 @@ printf '#!/bin/bash\nexit 1\n' > "$T/p/.claude/verify.sh"
 check "PLAYBOOK_VERIFY_DISABLE=1 skips" "[ \"\$(PLAYBOOK_VERIFY_DISABLE=1 run)\" = 0 ]"
 check "missing session_id still works" "[ \"\$(printf '{}' | \"$H\" >/dev/null 2>&1; echo \$?)\" = 2 ]"
 rm -rf "$T"
+# The hook section pointed these at $T, which is now gone; later sections must not inherit them.
+unset TMPDIR CLAUDE_PROJECT_DIR
+
+echo "Outcome checks (evals/check-outcomes.sh)"
+check "outcome checker is executable" "[ -x evals/check-outcomes.sh ]"
+check "hidden tests are not in any fixture" "! grep -rq 'hidden_test' evals/*/fixture.sh"
+if st_out="$(tests/outcomes-selftest.sh 2>&1)"; then
+  ok "outcomes self-test: good passes, bad fails"
+else
+  bad "outcomes self-test: good passes, bad fails"
+  printf '%s\n' "$st_out" | sed 's/^/       /'
+fi
 
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then

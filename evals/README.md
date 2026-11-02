@@ -50,6 +50,27 @@ CLI 2.1.316, plugin v2.1.0 plus the edits listed below, 3 runs per arm (2 in the
 - **Not covered:** `planner` (needs plan mode), `implementer`, `phase-gate` (needs the bundled review commands), `resume`, `project-init`, `security-grill-me`, and the Stop hook (see `tests/run.sh` for the hook). One scenario per skill is thin; add more before drawing conclusions.
 - **The `test-before-fix` grader** only recognises `Edit`. A run that writes the test with `Write` fails it, so a single failure there is a prompt to read the trace.
 
+## Outcome checks (v3.0, phase A)
+
+The graders above mostly score *process* (which tools ran, in what order, what the reply said). Outcome checks score the *end state* of the workspace, deterministically and without a model:
+
+```bash
+claude plugin eval . --runs 1 --scaffold --keep-temp ...   # keep the scaffold dirs
+evals/check-outcomes.sh quick-fix-bug /path/to/kept/scaffold
+```
+
+| Case | Outcome checks |
+|---|---|
+| `quick-fix-bug` | Hidden acceptance tests pass (never copied into the fixture); the project's own tests pass; `cart.py` changed; a regression test was added; nothing unrelated changed |
+| `debug-read-only` | No file modified or created; the bug is still present (diagnosed, not fixed) |
+| `grill-me-scans-first` | No file modified or created |
+
+`tests/outcomes-selftest.sh` (run by `tests/run.sh`) proves the checks discriminate: it builds each fixture, applies a hand-written good or bad result, and asserts the checker passes or fails it accordingly.
+
+**Not yet wired into `claude plugin eval` scoring.** The eval CLI's grader types that I could confirm are `tool_used`, `tool_order`, `llm` and `regex`; I found no documented grader that runs a command against the final workspace. Until one exists, outcome checks run as a separate step after a `--keep-temp` run. Phase B will either wire them in or report them alongside the eval scores.
+
+**Known gap:** the `test-before-fix` grader still recognises only `Edit` (see its note). The grader schema does not document an either/or on tool name, so I have not changed it blind.
+
 ## Adding a case
 
 `claude plugin eval init --bare <name>` scaffolds one. Keep prompts natural (don't name the skill or state the behaviour you want, or the baseline arm gets it for free), add at least one deterministic grader, and run with the baseline arm so you can see whether the plugin adds anything.
