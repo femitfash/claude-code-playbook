@@ -28,6 +28,14 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `settings.baseline.json`: extra deny patterns; new `templates/SETTINGS-NOTES.md` | Documents that rules are guardrails, not a boundary, and recommends sandboxing. |
 | New `quick-fix` skill | A light path for small tasks, bug fixes and legacy code. |
 
+# v3.0 (in progress): phase A
+
+| Change | Why |
+|---|---|
+| `evals/check-outcomes.sh` + hidden acceptance tests for `quick-fix-bug`; end-state checks for `debug-read-only` and `grill-me-scans-first` | Score whether the result is correct, not only how the agent got there. |
+| `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
+| `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
+
 # v2.2
 
 | Change | Why |

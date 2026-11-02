@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Pinned to the CLI version the evals were last run with (see evals/README.md).
+      - name: Install Claude Code CLI (for plugin validation)
+        run: npm install -g @anthropic-ai/claude-code@2.1.316
+
+      - name: ShellCheck
+        run: |
+          shellcheck -S warning hooks/*.sh tests/*.sh evals/*.sh evals/*/fixture.sh
+
+      - name: Deterministic tests (no model, no secrets)
+        run: tests/run.sh

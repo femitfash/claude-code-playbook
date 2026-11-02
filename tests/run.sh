@@ -58,6 +58,11 @@ check "PLAYBOOK_VERIFY_DISABLE=1 skips" "[ \"\$(PLAYBOOK_VERIFY_DISABLE=1 run)\"
 check "missing session_id still works" "[ \"\$(printf '{}' | \"$H\" >/dev/null 2>&1; echo \$?)\" = 2 ]"
 rm -rf "$T"
 
+echo "Outcome checks (evals/check-outcomes.sh)"
+check "outcome checker is executable" "[ -x evals/check-outcomes.sh ]"
+check "hidden tests are not in any fixture" "! grep -rq 'hidden_test' evals/*/fixture.sh"
+check "outcomes self-test: good passes, bad fails" "tests/outcomes-selftest.sh"
+
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then
   check "claude plugin validate --strict" "claude plugin validate --strict ."
