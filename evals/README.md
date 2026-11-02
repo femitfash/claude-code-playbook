@@ -71,6 +71,29 @@ evals/check-outcomes.sh quick-fix-bug /path/to/kept/scaffold
 
 **Known gap:** the `test-before-fix` grader still recognises only `Edit` (see its note). The grader schema does not document an either/or on tool name, so I have not changed it blind.
 
+## Phase B: coverage for every skill, and a held-out set
+
+Every skill now has at least one in-sample case here and one held-out case in [`holdout/`](holdout/README.md).
+
+| Skill | In-sample case | Held-out case | Kind |
+|---|---|---|---|
+| `quick-fix` | `quick-fix-bug` | `holdout-quick-fix` | lift |
+| `debug` | `debug-read-only` | `holdout-debug` | lift |
+| `grill-me` | `grill-me-scans-first`, `grill-me-one-question` | `holdout-grill-me` | lift |
+| `planner` | `planner-plan-shape` | `holdout-planner` | lift |
+| `security-grill-me` | `security-grill-me-domains` | `holdout-security-grill-me` | lift |
+| `implementer` | `implementer-scope-lock` | `holdout-implementer` | conformance |
+| `phase-gate` | `phase-gate-blocks` | `holdout-phase-gate` | conformance |
+| `resume` | `resume-orient` | `holdout-resume` | conformance |
+| `project-init` | `project-init-gated` | `holdout-project-init` | conformance |
+
+- **Lift cases** use a natural prompt that does not name the skill, so the no-plugin arm is a fair baseline.
+- **Conformance cases** start with `/playbook:<skill>`. Those four skills are user-invoked only (a model cannot start them), so there is no meaningful baseline. They check that the skill behaves as written when invoked. Do not report lift from them.
+- Outcome checks (`check-outcomes.sh`) exist for every case, and `tests/outcomes-selftest.sh` proves they pass good results and fail bad ones.
+- `tests/run.sh` fails CI if a skill loses its in-sample or held-out case, or if any held-out file changes (see `holdout/FROZEN.sha256`).
+
+**None of the phase B cases has been run under a model yet.** Expect the first run to turn up broken fixtures, over-strict graders, or slash-command prompts that are not expanded into the skill (the `skill-fired` indicator shows this). Fix in-sample cases freely. For held-out cases follow the rules in `holdout/README.md`.
+
 ## Adding a case
 
 `claude plugin eval init --bare <name>` scaffolds one. Keep prompts natural (don't name the skill or state the behaviour you want, or the baseline arm gets it for free), add at least one deterministic grader, and run with the baseline arm so you can see whether the plugin adds anything.
