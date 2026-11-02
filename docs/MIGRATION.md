@@ -36,6 +36,12 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0.0 release
+
+Plugin version bumped from 2.2.0 to 3.0.0. Claude Code decides whether an installed plugin has an update by its version, so installs made at 2.2.0 would not have picked up any of the v3.0 changes below until the version changed. To refresh an existing install: `/plugin marketplace update claude-code-playbook`, then uninstall and reinstall `playbook@claude-code-playbook`.
+
+The sections headed "in progress" below are all part of this release.
+
 # v3.0 (in progress): automatic chain
 
 | Change | Why |

@@ -37,6 +37,7 @@ done
 
 echo "Manifests and templates"
 check "plugin.json is valid JSON" "python3 -c 'import json;json.load(open(\".claude-plugin/plugin.json\"))'"
+check "plugin version is at least 3.0.0" "python3 -c 'import json,sys;v=tuple(int(x) for x in json.load(open(\".claude-plugin/plugin.json\"))[\"version\"].split(\".\"));sys.exit(0 if v>=(3,0,0) else 1)'"
 check "marketplace.json is valid JSON" "python3 -c 'import json;json.load(open(\".claude-plugin/marketplace.json\"))'"
 check "hooks.json is valid JSON" "python3 -c 'import json;json.load(open(\"hooks/hooks.json\"))'"
 check "settings baseline is valid JSON" "python3 -c 'import json;json.load(open(\"templates/settings.baseline.json\"))'"
