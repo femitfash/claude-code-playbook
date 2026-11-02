@@ -94,6 +94,38 @@ Every skill now has at least one in-sample case here and one held-out case in [`
 
 **None of the phase B cases has been run under a model yet.** Expect the first run to turn up broken fixtures, over-strict graders, or slash-command prompts that are not expanded into the skill (the `skill-fired` indicator shows this). Fix in-sample cases freely. For held-out cases follow the rules in `holdout/README.md`.
 
+## Running the suite (v3.0, phase D)
+
+```bash
+evals/run-suite.sh --set insample --runs 10 --models "sonnet opus" --budget 150
+evals/run-suite.sh --set holdout  --runs 10 --models "sonnet opus" --budget 60
+```
+
+`--budget` is mandatory and is the *total* cap in USD; the runner splits it across one invocation per case per model and passes each share to `--max-cost-usd`. Use `--dry-run` to see the commands without spending anything. Results go to `evals/results/<timestamp>/` (gitignored), and scaffold directories are kept so `check-outcomes.sh` can be run on them. `.github/workflows/evals.yml` runs the same thing by hand from GitHub (it never runs on pushes or pull requests, and has not been tested).
+
+Run the in-sample set while tuning. Run the held-out set rarely, and report it separately.
+
+## Decision rules (written before any data)
+
+These were fixed before any phase B or C case was run, so the results cannot move the goalposts. Changing them needs an entry in `docs/MIGRATION.md`.
+
+**Lift skills** (`quick-fix`, `debug`, `grill-me`, `planner`, `security-grill-me`), at 10 or more runs per arm:
+
+| Result | Decision |
+|---|---|
+| Lift of at least 0.15 on both the in-sample and held-out cases, and the skill fires in at least 80% of with-plugin runs | Keep |
+| Lift between 0 and 0.15, or fires in under 80% of runs | Revise the description or body once and re-test |
+| Lift of 0 or less on the held-out cases | Remove, or merge into another skill |
+
+**Conformance skills** (`implementer`, `phase-gate`, `resume`, `project-init`; no baseline is possible):
+
+| Result | Decision |
+|---|---|
+| Conformance score of at least 0.8 on both sets and the skill fires in at least 80% of runs | Keep |
+| Otherwise | Fix once and re-test, then remove |
+
+A conformance pass shows the skill follows its own script. It does not show the skill improves outcomes, so these four stay on convenience grounds only. `implementer` and `resume` are the first candidates to merge into another skill.
+
 ## Adding a case
 
 `claude plugin eval init --bare <name>` scaffolds one. Keep prompts natural (don't name the skill or state the behaviour you want, or the baseline arm gets it for free), add at least one deterministic grader, and run with the baseline arm so you can see whether the plugin adds anything.

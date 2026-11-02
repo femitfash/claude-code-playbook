@@ -139,6 +139,26 @@ check "every eval case has a skill-fired indicator" "! ls -d evals/*/graders eva
 echo "Held-out set is frozen (evals/holdout/FROZEN.sha256)"
 check "held-out files match the frozen manifest" "(cd evals/holdout && find . -type f ! -name FROZEN.sha256 ! -name README.md | LC_ALL=C sort | xargs sha256sum | diff -u FROZEN.sha256 -)"
 
+echo "Eval runner (evals/run-suite.sh, dry runs only)"
+check "runner refuses to run without a budget"   "! evals/run-suite.sh --set holdout --dry-run"
+check "runner rejects a non-numeric budget"      "! evals/run-suite.sh --set holdout --budget abc --dry-run"
+check "runner rejects an unknown set"            "! evals/run-suite.sh --set nope --budget 5 --dry-run"
+# These are read inside the eval strings below, which ShellCheck cannot see.
+# shellcheck disable=SC2034
+hold_out="$(evals/run-suite.sh --set holdout --budget 9 --runs 2 --dry-run 2>&1)"
+# shellcheck disable=SC2034
+insm_out="$(evals/run-suite.sh --set insample --budget 10 --dry-run 2>&1)"
+# shellcheck disable=SC2034
+two_out="$(evals/run-suite.sh --set holdout --budget 18 --models "sonnet opus" --dry-run 2>&1)"
+n_hold="$(find evals/holdout -mindepth 1 -maxdepth 1 -type d -name 'holdout-*' | wc -l | tr -d ' ')"
+check "holdout set: one invocation per held-out case" "[ \"\$(printf '%s\n' \"\$hold_out\" | grep -c 'holdout-')\" = \"$n_hold\" ]"
+check "in-sample set never includes a held-out case" "! printf '%s\n' \"\$insm_out\" | grep -q 'holdout-'"
+check "every invocation is capped"                   "! printf '%s\n%s\n' \"\$hold_out\" \"\$insm_out\" | grep -v -- '--max-cost-usd' | grep -q ."
+check "every invocation stays local (--no-publish)"  "! printf '%s\n%s\n' \"\$hold_out\" \"\$insm_out\" | grep -v -- '--no-publish' | grep -q ."
+check "budget is split evenly (9 over 9 cases)"      "printf '%s\n' \"\$hold_out\" | grep -q -- '--max-cost-usd 1.00'"
+check "two models double the invocations"            "[ \"\$(printf '%s\n' \"\$two_out\" | wc -l | tr -d ' ')\" = \"$(( 2 * n_hold ))\" ]"
+check "manual workflow: dispatch only, budget required" "grep -q 'workflow_dispatch' .github/workflows/evals.yml && ! grep -qE '^[[:space:]]*(pull_request|push|schedule):' .github/workflows/evals.yml && grep -A3 'budget:' .github/workflows/evals.yml | grep -q 'required: true'"
+
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then
   check "claude plugin validate --strict" "claude plugin validate --strict ."

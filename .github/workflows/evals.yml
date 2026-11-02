@@ -1,0 +1,66 @@
+# Manual only. Runs the model-backed evals with a required cost cap and uploads the results.
+# Never triggered by pushes or pull requests, so it cannot spend money on its own.
+#
+# Needs a repository secret ANTHROPIC_API_KEY. Untested: it has not been run. Runners may need
+# unprivileged user namespaces for the Bash sandbox (bubblewrap); if runs are refused, run
+# evals/run-suite.sh locally instead.
+name: evals (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      set:
+        description: "insample, holdout or all"
+        required: true
+        default: holdout
+      runs:
+        description: "Runs per case per arm"
+        required: true
+        default: "3"
+      models:
+        description: "Space-separated model aliases; empty uses the CLI default"
+        required: false
+        default: ""
+      budget:
+        description: "TOTAL cost cap in USD (required, split across invocations)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install sandbox dependencies
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap socat
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.316
+
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EVAL_SET: ${{ inputs.set }}
+          EVAL_RUNS: ${{ inputs.runs }}
+          EVAL_MODELS: ${{ inputs.models }}
+          EVAL_BUDGET: ${{ inputs.budget }}
+        run: |
+          if [ -n "$EVAL_MODELS" ]; then
+            evals/run-suite.sh --set "$EVAL_SET" --runs "$EVAL_RUNS" --budget "$EVAL_BUDGET" --models "$EVAL_MODELS" --out evals/results/ci
+          else
+            evals/run-suite.sh --set "$EVAL_SET" --runs "$EVAL_RUNS" --budget "$EVAL_BUDGET" --out evals/results/ci
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: evals/results/ci

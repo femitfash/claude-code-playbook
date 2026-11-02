@@ -36,6 +36,16 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): phases D to F
+
+| Change | Why |
+|---|---|
+| `evals/run-suite.sh`: runs the suite per model with a mandatory total cost cap and `--dry-run` | Phase D tooling. No paid run has been made; the dry-run behaviour is covered by `tests/run.sh`. |
+| `.github/workflows/evals.yml`: manual only, budget input required | Lets the suite run from GitHub without ever running on pushes or pull requests. Untested. |
+| `evals/README.md`: pre-registered keep / revise / remove rules | Phase E: set before any data so results cannot move the goalposts. No skill has been removed, because there is no data yet. |
+| README: quick start and a "What this does not cover" section | Phases E and F documentation. |
+| `docs/SCORECARD.md` | Phase F: states which of the seven criteria are met, partly met or unmeasured. It does not claim 9.5. |
+
 # v3.0 (in progress): phase C
 
 | Change | Why |
