@@ -27,7 +27,7 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `/playbook:security-grill-me` | Same, for threat modeling (auth, data, tenancy, secrets) |
 | `/playbook:planner` | Phase-scoped plan template; run in plan mode |
 | `/playbook:implementer` | Execute an approved plan, test-first, scope-locked (user-invoked only) |
-| `/playbook:phase-gate` | Tests + `/code-review` + `/security-review` + project constraints, then PASS/BLOCK; runs in a fresh forked context |
+| `/playbook:phase-gate` | Tests + code review + security review (the bundled `/code-review` and `/security-review` when they can be run, otherwise a direct review that says so) + project constraints, then PASS/BLOCK; runs in a fresh forked context |
 | `/playbook:debug` | Root-cause diagnosis; a guard hook blocks the edit tools and common Bash file writes (not a sandbox) |
 | `/playbook:quick-fix` | Light path for bug fixes, small changes and legacy code: no design doc or gates |
 | `/playbook:project-init` | 5-step approval-gated bootstrap from a `DESIGN.md` |
@@ -102,7 +102,7 @@ It will refuse to start if `DESIGN.md` does not exist; initiation carries out de
 ```
 /playbook:planner        # in plan mode: files, verification commands, exit criterion; approve or edit
 /playbook:implementer    # test-first, scope-locked to the approved plan
-/playbook:phase-gate     # tests + /code-review + /security-review + your constraints -> PASS / BLOCK
+/playbook:phase-gate     # tests + code and security review + your constraints -> PASS / BLOCK
 ```
 
 Resolve every BLOCK finding before opening the PR. For features touching auth, client data or money, run `/playbook:security-grill-me` before `planner`.

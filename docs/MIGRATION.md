@@ -36,6 +36,13 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): phase-gate fix
+
+| Change | Why |
+|---|---|
+| `phase-gate`: tries the bundled `/code-review` and `/security-review`, falls back to a direct review of the diff, and must report `Reviews run:` as `bundled` or `direct` | In a live headless test (one run each, forked and unforked) the model never invoked the bundled reviews and read the diff itself, while the skill text said it ran them. The skill now says what it does and the report says what actually ran. The verdict was correct in both runs. The fork is kept: it made no difference to the result in the test. |
+| Removed the sentence telling the model to use the bundled reviews "rather than re-implementing their checks" | It conflicted with the fallback. |
+
 # v3.0 (in progress): phases D to F
 
 | Change | Why |
