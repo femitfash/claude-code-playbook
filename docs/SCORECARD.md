@@ -26,3 +26,16 @@ The score cannot honestly reach 9.5 until criteria 1, 3, 4 and 7 are measured. I
 ## Estimated position
 
 My estimate, not a measurement: the design and enforcement are now strong, and the evidence is still thin. Treat the playbook as roughly where the reassessment put it plus the phase A to C work, and treat 9.5 as unproven until the runs above exist.
+
+## Live smoke test (2026-11-02)
+
+One headless run each on the default model, with a spending cap per run, about $0.42 in total. It finds breakage; it does not measure reliability.
+
+| Piece | Result |
+|---|---|
+| Stop hook with a failing `verify.sh` | Worked: blocked with "attempt 1 of 3", Claude fixed it, the next stop passed. |
+| Slash-invoking `/playbook:debug` | Worked: the skill was expanded and its skill-scoped hook fired. |
+| Debug guard | Worked: `echo > file` and `sed -i` were both blocked and the repo stayed unchanged. |
+| Forked `phase-gate` | Correct verdict (BLOCK, with file and line), but it did not invoke the bundled reviews; an unforked run behaved the same. Fixed by the phase-gate change above: the skill now falls back to a direct review and reports which kind ran. Re-run after the fix (one run, about $0.05): BLOCK first, then `Reviews run: direct` for both reviews. |
+
+Not covered: interactive sessions, multi-turn skills, and the eval suite.

@@ -25,6 +25,7 @@ for f in skills/*/SKILL.md; do
 done
 check "debug: edit tools disabled" "fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Edit && fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Write"
 check "debug: read-only guard hook is wired and executable" "fm skills/debug/SKILL.md | grep -q 'readonly-guard.sh' && [ -x skills/debug/readonly-guard.sh ]"
+check "phase-gate: reports which reviews actually ran" "grep -q 'Reviews run:' skills/phase-gate/SKILL.md && grep -q 'Never say a bundled review ran if it did not' skills/phase-gate/SKILL.md"
 check "phase-gate: runs in a fresh forked context" "fm skills/phase-gate/SKILL.md | grep -qE '^context:[[:space:]]*fork'"
 for s in implementer phase-gate resume project-init; do
   check "$s: user-invoked only" "fm skills/$s/SKILL.md | grep -qE '^disable-model-invocation:[[:space:]]*true'"
