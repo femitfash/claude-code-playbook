@@ -160,6 +160,12 @@ check "budget is split evenly (9 over 9 cases)"      "printf '%s\n' \"\$hold_out
 check "two models double the invocations"            "[ \"\$(printf '%s\n' \"\$two_out\" | wc -l | tr -d ' ')\" = \"$(( 2 * n_hold ))\" ]"
 check "manual workflow: dispatch only, budget required" "grep -q 'workflow_dispatch' .github/workflows/evals.yml && ! grep -qE '^[[:space:]]*(pull_request|push|schedule):' .github/workflows/evals.yml && grep -A3 'budget:' .github/workflows/evals.yml | grep -q 'required: true'"
 
+echo "AI log and time-box docs"
+check "AI-LOG template has the notes block and the pushback structure" "grep -q 'Asked:' templates/AI-LOG.md && grep -q 'Kept:' templates/AI-LOG.md && grep -q 'The pushback moment' templates/AI-LOG.md && grep -q 'Only real interactions' templates/AI-LOG.md"
+check "AI-LOG example is labelled illustrative" "grep -qi 'made-up project' templates/AI-LOG.md"
+check "TIMEBOXED plan covers spec, verify, build and the skip list" "grep -q 'Write the spec file first' docs/TIMEBOXED.md && grep -q 'verify.sh' docs/TIMEBOXED.md && grep -q 'Skip these in a time box' docs/TIMEBOXED.md"
+check "README links both docs" "grep -q 'docs/TIMEBOXED.md' README.md && grep -q 'templates/AI-LOG.md' README.md"
+
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then
   check "claude plugin validate --strict" "claude plugin validate --strict ."
