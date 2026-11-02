@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Copy to <project>/.claude/verify.sh and chmod +x. The playbook's Stop hook runs it
+# before Claude finishes a turn; a non-zero exit sends the output back to Claude.
+set -euo pipefail
+npm run -s typecheck
+npm test --silent
