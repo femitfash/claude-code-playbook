@@ -143,8 +143,12 @@ echo "Eval runner (evals/run-suite.sh, dry runs only)"
 check "runner refuses to run without a budget"   "! evals/run-suite.sh --set holdout --dry-run"
 check "runner rejects a non-numeric budget"      "! evals/run-suite.sh --set holdout --budget abc --dry-run"
 check "runner rejects an unknown set"            "! evals/run-suite.sh --set nope --budget 5 --dry-run"
+# These are read inside the eval strings below, which ShellCheck cannot see.
+# shellcheck disable=SC2034
 hold_out="$(evals/run-suite.sh --set holdout --budget 9 --runs 2 --dry-run 2>&1)"
+# shellcheck disable=SC2034
 insm_out="$(evals/run-suite.sh --set insample --budget 10 --dry-run 2>&1)"
+# shellcheck disable=SC2034
 two_out="$(evals/run-suite.sh --set holdout --budget 18 --models "sonnet opus" --dry-run 2>&1)"
 n_hold="$(find evals/holdout -mindepth 1 -maxdepth 1 -type d -name 'holdout-*' | wc -l | tr -d ' ')"
 check "holdout set: one invocation per held-out case" "[ \"\$(printf '%s\n' \"\$hold_out\" | grep -c 'holdout-')\" = \"$n_hold\" ]"
