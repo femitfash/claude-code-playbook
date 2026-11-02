@@ -1,6 +1,6 @@
 ---
 name: quick-fix
-description: Use for small, well-understood work — a bug fix, a one-file change, a small feature, or a change in a legacy codebase with no design doc. A light path that skips the design doc, grilling and phase gates.
+description: Use whenever the user asks to fix a bug, make a small change, or add a small feature in an existing codebase and the goal is clear. Reproduces first, writes a failing regression test before changing code, makes the smallest fix, and runs the tests before reporting. Use this instead of editing straight away. Skips the design doc, grilling and phase gates.
 argument-hint: "[what to fix or change]"
 ---
 

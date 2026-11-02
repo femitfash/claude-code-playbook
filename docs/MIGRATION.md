@@ -27,3 +27,12 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | Stop hook: per-session retry cap (default 3) instead of a single retry; `PLAYBOOK_VERIFY_DISABLE` | A failing check is enforced several times, and an unfixable one can't loop forever. |
 | `settings.baseline.json`: extra deny patterns; new `templates/SETTINGS-NOTES.md` | Documents that rules are guardrails, not a boundary, and recommends sandboxing. |
 | New `quick-fix` skill | A light path for small tasks, bug fixes and legacy code. |
+
+# v2.2
+
+| Change | Why |
+|---|---|
+| New `evals/` suite (4 cases, with/without-plugin comparison), `tests/run.sh`, `docs/examples/` | Evidence of efficacy; see `evals/README.md` for results and caveats. |
+| `quick-fix` description rewritten | The first eval run showed the skill never triggered on a plain bug-fix request. |
+| `grill-me`, `security-grill-me`: explicit "exactly one question per turn" rule | The eval showed the plugin arm bundling several questions into one turn. |
+| `phase-gate`: removed migration history from the skill text | Instructions to Claude should not carry changelog notes. |

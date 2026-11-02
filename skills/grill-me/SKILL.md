@@ -33,7 +33,7 @@ When all branches are resolved:
 
 ## Rules
 
-- One question at a time — never a list of ten questions at once.
+- **Exactly one question per turn.** Your message ends with a single question, with one question mark. No compound questions ("X, and also Y?", "A, or will B?"), no bulleted sub-questions to answer, no "also, ..." follow-ups. Describe the options inside the one question if useful. If you need two facts, ask the more important one now and the other next turn.
 - Always provide a recommended answer with each question.
 - Never skip a branch because it "seems obvious."
 - If the user's answer reveals a new branch, add it and walk it.

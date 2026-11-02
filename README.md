@@ -48,9 +48,15 @@ It doesn't re-document features. For those, read the official [best practices](h
 5. **Enforce, don't just advise.** Rules that can't have exceptions live in permission rules and hooks, not in prose.
 6. **Close phases.** Update the decision log, seed the next phase, then move on.
 
+## Evidence
+
+- [`evals/`](evals/README.md): behavioural evals with a with/without-plugin comparison, and the results of the runs so far, including what they got wrong.
+- [`docs/examples/`](docs/examples/README.md): worked examples (real command output from the eval fixtures, plus clearly labelled illustrative ones).
+- `tests/run.sh`: deterministic checks (skill lint, settings baseline, Stop hook behaviour, `claude plugin validate --strict`). No model needed.
+
 ## Maintenance
 
-Run `claude plugin validate --strict .` after changes. See [docs/MIGRATION.md](docs/MIGRATION.md) for what changed from v1 and why. Re-audit against the official docs every quarter or so; they move quickly.
+Run `tests/run.sh` after changes. See [docs/MIGRATION.md](docs/MIGRATION.md) for what changed from v1 and why. Re-audit against the official docs every quarter or so; they move quickly.
 
 ## License
 
