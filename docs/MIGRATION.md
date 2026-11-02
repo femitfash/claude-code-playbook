@@ -17,3 +17,13 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `CLAUDE.md` "50% compact" rule | `/context` guidance | A model can't reliably read its own context usage. |
 | `CLAUDE.md` memory claim | removed | `/compact` summaries are not auto memory. Use `--continue`/`--resume` and committed plans. |
 | `CLAUDE.md` model rules | aliases and `/effort` | Avoids stale version names. |
+
+# v2.1
+
+| Change | Why |
+|---|---|
+| `debug`: no longer forked; `disallowed-tools: Edit Write NotebookEdit`; may run tests and read-only commands | It asks the user questions, so it can't be a background fork. Edit tools are now actually disabled instead of "never edit" being prose, and reproducing a failure is allowed. |
+| `security-grill-me`: removed "Use Opus" line | No hard-coded models. |
+| Stop hook: per-session retry cap (default 3) instead of a single retry; `PLAYBOOK_VERIFY_DISABLE` | A failing check is enforced several times, and an unfixable one can't loop forever. |
+| `settings.baseline.json`: extra deny patterns; new `templates/SETTINGS-NOTES.md` | Documents that rules are guardrails, not a boundary, and recommends sandboxing. |
+| New `quick-fix` skill | A light path for small tasks, bug fixes and legacy code. |
