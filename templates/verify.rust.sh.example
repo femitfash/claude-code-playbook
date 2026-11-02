@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Rust. Copy to <project>/.claude/verify.sh and chmod +x. The playbook's Stop hook runs it
+# before Claude finishes a turn; a non-zero exit sends the output back to Claude.
+set -euo pipefail
+cargo check --quiet
+cargo test --quiet
+# cargo clippy --quiet -- -D warnings

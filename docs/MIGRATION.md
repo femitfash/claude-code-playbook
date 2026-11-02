@@ -36,6 +36,19 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): phase C
+
+| Change | Why |
+|---|---|
+| `debug`: registers a PreToolUse guard (`skills/debug/readonly-guard.sh`) through skill frontmatter `hooks`; blocks Edit/Write/NotebookEdit and common Bash file writes; fails closed if the script cannot be found | In v2.1 the read-only rule rested on `disallowed-tools` in the skill's frontmatter. In CLI 2.1.316 I found no sign that the skill loader reads that field (it appears as an agent field and a CLI flag), so that rule may never have been enforced. The line is kept but no longer relied on. |
+| The guard is a guardrail, not a sandbox | It cannot see a file write made from inside a script the agent runs (for example `python3 -c`). Use the sandbox for a real boundary. |
+| `phase-gate`: `context: fork` | Review in a fresh context so it is not anchored on the conversation that wrote the code. Unverified under a model; the `phase-gate-blocks` case is the check, including whether the forked context can still run `/code-review`. Revert if it cannot. |
+| Stop hook skips the check when the working tree has not changed since the last passing run; `PLAYBOOK_VERIFY_ALWAYS=1` restores run-every-stop | Question-and-answer turns no longer pay for the test suite. Fingerprint covers HEAD, status, diff and untracked file contents; non-git projects always run. |
+| `settings.baseline.json`: more `rm` and `find -delete` spellings denied; plain `rm -r *` moved from deny to ask | Close the bypasses listed in the settings notes without blocking legitimate cleanups. |
+| New `templates/settings.sandbox.json` | Ship the real boundary, not only a note recommending it. |
+| New `verify.python.sh.example`, `verify.go.sh.example`, `verify.rust.sh.example` | The Stop hook is useful beyond npm projects. |
+| CI ShellCheck now also covers skill scripts, held-out fixtures and templates | New shell files are linted. |
+
 # v3.0 (in progress): phase B
 
 | Change | Why |

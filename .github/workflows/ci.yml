@@ -25,7 +25,7 @@ jobs:
 
       - name: ShellCheck
         run: |
-          shellcheck -S warning hooks/*.sh tests/*.sh evals/*.sh evals/*/fixture.sh
+          shellcheck -S warning hooks/*.sh skills/*/*.sh tests/*.sh evals/*.sh evals/*/fixture.sh evals/holdout/*/fixture.sh templates/*.example
 
       - name: Deterministic tests (no model, no secrets)
         run: tests/run.sh

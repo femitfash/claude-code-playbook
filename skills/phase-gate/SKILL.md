@@ -2,11 +2,14 @@
 name: phase-gate
 description: Use before opening a PR or closing a phase milestone. Runs the review gate (Claude Code's bundled /code-review and /security-review plus project-specific checks) and decides pass or block.
 disable-model-invocation: true
+context: fork
 ---
 
 # Phase gate
 
 Claude Code ships `/code-review` and `/security-review`; use them rather than re-implementing their checks.
+
+This skill runs in a fresh, forked context so the review is not anchored on the conversation that wrote the code. Judge the diff and the tests as they are, not what the author intended.
 
 ## Steps
 
