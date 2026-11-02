@@ -30,7 +30,7 @@ Show the drafts; write only after approval.
 
 ## Step 2: Safety baseline
 
-Propose a project `.claude/settings.json` based on the playbook's `templates/settings.baseline.json` (permission deny rules for secrets and destructive commands, test-on-Stop hook configuration). Show it; write after approval.
+Propose a project `.claude/settings.json` based on the playbook's `templates/settings.baseline.json` (permission deny rules for secrets and destructive commands) and `templates/settings.sandbox.json` (sandboxing), and a `.claude/verify.sh` from the matching `templates/verify.*.sh.example` for the project's language (the plugin's Stop hook runs it). Show them; write after approval.
 
 ## Step 3: Phase 0 plan
 

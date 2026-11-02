@@ -24,6 +24,8 @@ for f in skills/*/SKILL.md; do
   fi
 done
 check "debug: edit tools disabled" "fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Edit && fm skills/debug/SKILL.md | grep -E '^disallowed-tools:' | grep -q Write"
+check "debug: read-only guard hook is wired and executable" "fm skills/debug/SKILL.md | grep -q 'readonly-guard.sh' && [ -x skills/debug/readonly-guard.sh ]"
+check "phase-gate: runs in a fresh forked context" "fm skills/phase-gate/SKILL.md | grep -qE '^context:[[:space:]]*fork'"
 for s in implementer phase-gate resume project-init; do
   check "$s: user-invoked only" "fm skills/$s/SKILL.md | grep -qE '^disable-model-invocation:[[:space:]]*true'"
 done
@@ -33,8 +35,13 @@ check "plugin.json is valid JSON" "python3 -c 'import json;json.load(open(\".cla
 check "marketplace.json is valid JSON" "python3 -c 'import json;json.load(open(\".claude-plugin/marketplace.json\"))'"
 check "hooks.json is valid JSON" "python3 -c 'import json;json.load(open(\"hooks/hooks.json\"))'"
 check "settings baseline is valid JSON" "python3 -c 'import json;json.load(open(\"templates/settings.baseline.json\"))'"
-for pat in '.env' 'rm -rf' 'rm -fr' 'git push --force' 'git push -f' 'push * +'; do
+for pat in '.env' 'cat .env' 'rm -rf' 'rm -fr' 'rm -r -f' 'rm -f -r' 'rm --recursive' '-delete' 'git push --force' 'git push -f' 'push * +'; do
   check "baseline denies: $pat" "python3 -c 'import json,sys;d=json.load(open(\"templates/settings.baseline.json\"))[\"permissions\"][\"deny\"];sys.exit(0 if any(sys.argv[1] in x for x in d) else 1)' '$pat'"
+done
+check "baseline asks (not denies) on plain rm -r" "python3 -c 'import json,sys;d=json.load(open(\"templates/settings.baseline.json\"))[\"permissions\"];sys.exit(0 if any(\"rm -r *\" in x for x in d[\"ask\"]) and not any(x == \"Bash(rm -r *)\" for x in d[\"deny\"]) else 1)'"
+check "sandbox template: enabled, no opt-out, valid JSON" "python3 -c 'import json,sys;d=json.load(open(\"templates/settings.sandbox.json\"))[\"sandbox\"];sys.exit(0 if d[\"enabled\"] is True and d[\"allowUnsandboxedCommands\"] is False else 1)'"
+for v in templates/verify*.example; do
+  check "$v: bash syntax and strict mode" "bash -n '$v' && head -n 1 '$v' | grep -q '^#!/usr/bin/env bash' && grep -q 'set -euo pipefail' '$v'"
 done
 check "no v1 skill references remain" "! grep -rqE '/playbook:(reviewer|security-auditor)|\`(reviewer|security-auditor)\` skill' skills README.md"
 
@@ -59,6 +66,55 @@ check "missing session_id still works" "[ \"\$(printf '{}' | \"$H\" >/dev/null 2
 rm -rf "$T"
 # The hook section pointed these at $T, which is now gone; later sections must not inherit them.
 unset TMPDIR CLAUDE_PROJECT_DIR
+
+echo "Stop hook skips unchanged trees"
+T2="$(mktemp -d)"; P="$T2/g"; mkdir -p "$P/.claude"
+( cd "$P" && git init -q && git -c user.name=t -c user.email=t@example.com commit -q --allow-empty -m init )
+vlog="$T2/verify.log"
+printf '#!/bin/bash\necho run >> %s\nexit 0\n' "$vlog" > "$P/.claude/verify.sh"; chmod +x "$P/.claude/verify.sh"
+runs() { wc -l < "$vlog" 2>/dev/null | tr -d ' '; }
+hrun() { printf '{"session_id":"%s"}' "$1" | TMPDIR="$T2" CLAUDE_PROJECT_DIR="$P" "$H" >/dev/null 2>&1; echo $?; }
+hrun s1 >/dev/null;  check "first stop runs verify"                        "[ \"\$(runs)\" = 1 ]"
+hrun s1 >/dev/null;  check "unchanged tree skips verify"                   "[ \"\$(runs)\" = 1 ]"
+echo a > "$P/new.txt"; hrun s1 >/dev/null
+check "a new file triggers verify"                                         "[ \"\$(runs)\" = 2 ]"
+hrun s1 >/dev/null;  check "unchanged again skips verify"                  "[ \"\$(runs)\" = 2 ]"
+echo b >> "$P/new.txt"; hrun s1 >/dev/null
+check "editing an untracked file's content triggers verify"                "[ \"\$(runs)\" = 3 ]"
+( cd "$P" && git add -A && git -c user.name=t -c user.email=t@example.com commit -q -m c ); hrun s1 >/dev/null
+check "a commit triggers verify"                                           "[ \"\$(runs)\" = 4 ]"
+PLAYBOOK_VERIFY_ALWAYS=1 hrun s1 >/dev/null
+check "PLAYBOOK_VERIFY_ALWAYS=1 runs on an unchanged tree"                 "[ \"\$(runs)\" = 5 ]"
+printf '#!/bin/bash\necho boom\nexit 1\n' > "$P/.claude/verify.sh"; echo c >> "$P/new.txt"
+check "failing verify blocks"                                              "[ \"\$(hrun f1)\" = 2 ]"
+check "a failure is not skipped on the next stop (tree unchanged)"         "[ \"\$(hrun f1)\" = 2 ]"
+rm -rf "$T2"
+
+echo "Debug read-only guard (skills/debug/readonly-guard.sh)"
+GUARD="$PWD/skills/debug/readonly-guard.sh"
+gtool() { # gtool <allow|deny> <tool_name>
+  local rc; printf '{"tool_name":"%s","tool_input":{"file_path":"x"}}' "$2" | "$GUARD" >/dev/null 2>&1; rc=$?
+  if { [[ $1 == allow && $rc -eq 0 ]] || [[ $1 == deny && $rc -eq 2 ]]; }; then ok "guard $1: tool $2"; else bad "guard $1: tool $2 (exit $rc)"; fi
+}
+gcase() { # gcase <allow|deny> <JSON-escaped bash command>
+  local rc; printf '{"tool_name":"Bash","tool_input":{"command":"%s","description":"x"}}' "$2" | "$GUARD" >/dev/null 2>&1; rc=$?
+  if { [[ $1 == allow && $rc -eq 0 ]] || [[ $1 == deny && $rc -eq 2 ]]; }; then ok "guard $1: $2"; else bad "guard $1: $2 (exit $rc)"; fi
+}
+for t in Edit Write NotebookEdit MultiEdit; do gtool deny "$t"; done
+for t in Read Grep Glob; do gtool allow "$t"; done
+for c in 'python3 -m unittest' 'python3 -m unittest 2>&1 | tail -14' 'git log --oneline -5' 'git diff --stat' \
+         'git status --short | wc -l' 'git branch' 'grep -rn reserve .' 'cat -n inventory.py' 'ls -la' 'pytest -q 2>/dev/null' \
+         'python3 -c \"print(2 > 1)\"' "python3 -c \\\"from inventory import reserve; s={'ABC': 3}; print(reserve(s, 'ABC', 3), s)\\\""; do
+  gcase allow "$c"
+done
+for c in 'echo x > f.py' 'echo x >> f.py' 'cat a | tee b' 'sed -i s/a/b/ f.py' 'sed -i.bak s/a/b/ f.py' 'perl -pi -e s/a/b/ f' \
+         'rm f' 'rm -rf build' 'mv a b' 'cp a b' 'touch f' 'mkdir d' 'dd if=a of=b' 'git checkout -- .' 'git commit -am x' 'git stash' \
+         'git reset --hard' 'git -C . add .' 'git branch -D x' 'pip install requests' 'npm install' 'find . -name x -delete' \
+         'curl -o out http://x' 'python3 -m unittest > out.txt'; do
+  gcase deny "$c"
+done
+printf '{"tool_name":"Bash","tool_input":{}}' | "$GUARD" >/dev/null 2>&1
+check "guard fails closed when the command cannot be read" "[ $? -eq 2 ]"
 
 echo "Outcome checks (evals/check-outcomes.sh)"
 check "outcome checker is executable" "[ -x evals/check-outcomes.sh ]"

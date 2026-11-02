@@ -20,8 +20,8 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `/playbook:security-grill-me` | Same, for threat modeling (auth, data, tenancy, secrets) |
 | `/playbook:planner` | Phase-scoped plan template; run in plan mode |
 | `/playbook:implementer` | Execute an approved plan, test-first, scope-locked (user-invoked only) |
-| `/playbook:phase-gate` | Tests + `/code-review` + `/security-review` + project constraints, then PASS/BLOCK |
-| `/playbook:debug` | Read-only root-cause diagnosis; never writes fixes |
+| `/playbook:phase-gate` | Tests + `/code-review` + `/security-review` + project constraints, then PASS/BLOCK; runs in a fresh forked context |
+| `/playbook:debug` | Root-cause diagnosis; a guard hook blocks the edit tools and common Bash file writes (not a sandbox) |
 | `/playbook:quick-fix` | Light path for bug fixes, small changes and legacy code: no design doc or gates |
 | `/playbook:project-init` | 5-step approval-gated bootstrap from a `DESIGN.md` |
 | `/playbook:resume` | Orient, verify, confirm direction at session start |
@@ -30,7 +30,8 @@ It doesn't re-document features. For those, read the official [best practices](h
 |---|---|
 | `skills/project-init/DESIGN-TEMPLATE.md` | Blank design doc; fill in before `project-init` |
 | `templates/settings.baseline.json` | Permission deny/ask rules to copy into `.claude/settings.json`. Guardrails, not a boundary: read `templates/SETTINGS-NOTES.md` and add a sandbox |
-| `templates/verify.sh.example` | Copy to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session (`PLAYBOOK_VERIFY_MAX_RETRIES`; `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
+| `templates/verify.sh.example` (npm), `verify.python.sh.example`, `verify.go.sh.example`, `verify.rust.sh.example` | Copy the one for your stack to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session. It runs only when the working tree changed since the last passing run (`PLAYBOOK_VERIFY_ALWAYS=1` to run on every stop, `PLAYBOOK_VERIFY_MAX_RETRIES` to change the cap, `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
+| `templates/settings.sandbox.json` | Sandbox settings to merge into `.claude/settings.json`: sandbox on, no opt-out, network limited to package registries. The real boundary; the permission rules above are guardrails |
 | `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
 
 ## Which path?

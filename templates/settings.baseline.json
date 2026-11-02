@@ -7,7 +7,10 @@
       "Bash(cat .env*)",
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
-      "Bash(rm -r *)",
+      "Bash(rm -r -f *)",
+      "Bash(rm -f -r *)",
+      "Bash(rm --recursive *)",
+      "Bash(find * -delete*)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git push * --force*)",
@@ -16,7 +19,8 @@
       "Bash(curl * | bash)"
     ],
     "ask": [
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(rm -r *)"
     ],
     "allow": [
       "Bash(git status)",

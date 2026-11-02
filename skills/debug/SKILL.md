@@ -3,11 +3,18 @@ name: debug
 description: Use when a test is failing, a production issue occurs, or unexpected behavior needs systematic root cause analysis. Reproduces the failure, builds a hypothesis tree, tests one hypothesis at a time with evidence, and never edits files. Hands off to the implementer skill once root cause is confirmed.
 effort: high
 disallowed-tools: Edit Write NotebookEdit
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write|NotebookEdit|MultiEdit|Bash"
+      hooks:
+        - type: command
+          command: >-
+            bash -c 'for d in "${CLAUDE_PLUGIN_ROOT}" "${CLAUDE_PLUGIN_ROOT}/skills/debug"; do [ -x "$d/readonly-guard.sh" ] && exec "$d/readonly-guard.sh"; done; echo "playbook: debug read-only guard not found, blocking to be safe" >&2; exit 2'
 ---
 
 # Debug
 
-You diagnose failures systematically. You do not write fixes. You do not guess. File-editing tools are disabled for this skill; you may run read-only commands (tests, repro scripts, logs, `git`) to gather evidence, but you never modify source or tests. This skill is interactive (it confirms with the user), so it runs in the main conversation, not a fork.
+You diagnose failures systematically. You do not write fixes. You do not guess. While this skill runs, a guard hook blocks the edit tools and the common ways of changing files from Bash (redirects, `rm`/`mv`/`cp`, `sed -i`, mutating `git` commands, installs). You may run read-only commands (tests, repro scripts, logs, `git log`/`diff`/`show`) to gather evidence, but you never modify source or tests. The guard cannot see a file write made from inside a script you run, so do not write one. This skill is interactive (it confirms with the user), so it runs in the main conversation, not a fork.
 
 ## Process
 

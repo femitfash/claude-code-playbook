@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Python. Copy to <project>/.claude/verify.sh and chmod +x. The playbook's Stop hook runs it
+# before Claude finishes a turn; a non-zero exit sends the output back to Claude.
+# Edit to match the tools your project actually uses.
+set -euo pipefail
+python3 -m unittest discover -q
+# python3 -m pytest -q
+# python3 -m pyflakes .
+# python3 -m mypy .
