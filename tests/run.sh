@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deterministic checks for the playbook (no model needed). Run: tests/run.sh
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 fail=0; pass=0
 ok()   { pass=$((pass+1)); echo "  ok   $1"; }
 bad()  { fail=$((fail+1)); echo "  FAIL $1"; }
@@ -13,7 +13,7 @@ echo "Skills"
 for f in skills/*/SKILL.md; do
   d="$(basename "$(dirname "$f")")"
   front="$(fm "$f")"
-  check "$d: name matches directory" "printf '%s' \"\$front\" | grep -qE '^name:[[:space:]]*$d[[:space:]]*\$'"
+  check "$d: name matches directory" "printf '%s' \"\$front\" | grep -qE '^name:[[:space:]]*${d}[[:space:]]*\$'"
   check "$d: has description" "printf '%s' \"\$front\" | grep -qE '^description:[[:space:]]*.+'"
   check "$d: README lists /playbook:$d" "grep -q '/playbook:$d' README.md"
   # No pinned model versions in skills.

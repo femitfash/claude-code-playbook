@@ -3,7 +3,7 @@
 # No model needed. Builds each fixture in a temp dir, applies a hand-written result, runs the checker.
 # Run: tests/outcomes-selftest.sh   (also called from tests/run.sh)
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 root="$PWD"
 pass=0; fail=0
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
