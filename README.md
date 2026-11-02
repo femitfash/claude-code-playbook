@@ -39,6 +39,73 @@ It doesn't re-document features. For those, read the official [best practices](h
 - **Bug fix, small change, or legacy code:** `/playbook:quick-fix` (and `/playbook:debug` if the cause is unclear).
 - **Resuming:** `claude --continue`, or `/playbook:resume` if the conversation is gone.
 
+## Example: starting a new project
+
+An illustrative walkthrough for a greenfield project, here a small invoicing tool for freelancers. It shows the order of steps and where you stay in control. It is not a recorded session, and the prompts and replies are paraphrased.
+
+**1. Install and set up guardrails (once per machine or project, about 5 minutes)**
+
+```
+/plugin install playbook --marketplace femitfash/claude-code-playbook
+```
+
+- Copy `templates/settings.baseline.json` into the project's `.claude/settings.json`, and read `templates/SETTINGS-NOTES.md` (these rules are guardrails, not a security boundary; add a sandbox).
+- Copy `templates/verify.sh.example` to `.claude/verify.sh`, edit it to run your real typecheck and tests, then `chmod +x`. From now on Claude cannot finish a turn while that script fails (up to 3 retries per session).
+
+**2. Pin down the idea before any code**
+
+```
+/playbook:grill-me
+> I'm building a small invoicing tool for freelancers. Grill me.
+```
+
+Claude reads whatever exists in the repo, then asks one question at a time, each with a recommended answer you can accept or change ("Single currency per invoice for v1? Recommended: yes, to avoid exchange-rate handling."). Stop when it summarises the full design and you confirm it.
+
+The tool handles client data and payments, so also run:
+
+```
+/playbook:security-grill-me
+```
+
+It walks eight areas (threat actors, trust boundaries, data, authentication, authorization, input, secrets, audit) one question at a time and ends with a threat model you can paste into the design doc.
+
+**3. Write the design doc**
+
+Copy `skills/project-init/DESIGN-TEMPLATE.md` to `DESIGN.md` in the project root. Fill in the goals and non-goals, the locked decisions, the phases with a testable exit criterion for each, and the threat model from step 2. Keep Phase 0 small: for example "a user can create and download one PDF invoice, with tests passing". A filled-in sample is in [`docs/examples/DESIGN-example.md`](docs/examples/DESIGN-example.md).
+
+**4. Bootstrap the project (approval-gated)**
+
+```
+/playbook:project-init DESIGN.md
+```
+
+It pauses for your approval after each of five steps:
+
+1. Drafts `CLAUDE.md` (with your real test, typecheck and lint commands) and `.claude/rules/`. You review before anything is written.
+2. Proposes `.claude/settings.json` from the baseline.
+3. Plans **Phase 0 only** in plan mode. You approve the plan.
+4. Implements it test-first, then runs the gate (`phase-gate`). You see the passing output.
+5. Makes small commits, closes Phase 0 in the decision log and seeds `PHASE-1.md`.
+
+It will refuse to start if `DESIGN.md` does not exist; initiation carries out decisions, it does not make them.
+
+**5. Build each later phase with the same loop**
+
+```
+/playbook:planner        # in plan mode: files, verification commands, exit criterion; approve or edit
+/playbook:implementer    # test-first, scope-locked to the approved plan
+/playbook:phase-gate     # tests + /code-review + /security-review + your constraints -> PASS / BLOCK
+```
+
+Resolve every BLOCK finding before opening the PR. For features touching auth, client data or money, run `/playbook:security-grill-me` before `planner`.
+
+**6. Day to day after launch**
+
+- A bug report: `/playbook:quick-fix` (or `/playbook:debug` first if the cause is unclear).
+- Back after a break with the conversation gone: `/playbook:resume`.
+
+**What to expect:** several approval stops in the first session, then a short loop per phase. If that is too heavy for your project, skip `project-init` and use `quick-fix` plus `planner` as needed.
+
 ## The method
 
 1. **Design first.** A `DESIGN.md` with locked decisions, phases and exit criteria is the source of truth across sessions.
