@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Phase gate
 
-This replaces the old `reviewer` and `security-auditor` skills. Claude Code now ships `/code-review` and `/security-review`; do not re-implement them.
+Claude Code ships `/code-review` and `/security-review`; use them rather than re-implementing their checks.
 
 ## Steps
 

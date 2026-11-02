@@ -91,7 +91,7 @@ When all 8 domains are resolved:
 
 ## Rules
 
-- One question at a time — never a numbered list of security concerns at once.
+- **Exactly one question per turn.** Your message ends with a single question, with one question mark. No compound questions ("X, and also Y?", "A, or will B?"), no bulleted sub-questions to answer, no "also, ..." follow-ups. Describe the options inside the one question if useful. If you need two facts, ask the more important one now and the other next turn.
 - Always provide a recommended answer with security rationale.
 - Never skip a domain because it "doesn't apply" — explain why and get explicit confirmation.
 - If an answer reveals a new risk, branch and walk it.
