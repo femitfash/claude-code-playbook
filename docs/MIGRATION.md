@@ -36,6 +36,17 @@ v1 was a set of files you copied by hand. v2 is a plugin: `/plugin install playb
 | `tests/outcomes-selftest.sh`, called from `tests/run.sh` | Proves the outcome checks fail bad results and pass good ones. |
 | `.github/workflows/ci.yml`: ShellCheck, `tests/run.sh`, pinned CLI for `plugin validate --strict` | Regressions are caught on every pull request. No model calls, no secrets. |
 
+# v3.0 (in progress): phase B
+
+| Change | Why |
+|---|---|
+| 6 new in-sample eval cases: `planner-plan-shape`, `security-grill-me-domains`, `implementer-scope-lock`, `phase-gate-blocks`, `resume-orient`, `project-init-gated` | Every skill now has an eval case. |
+| `evals/holdout/`: 9 held-out cases (one per skill), frozen by `FROZEN.sha256` | Report results on tasks the plugin was not tuned against. |
+| Outcome checks for all new cases, with hidden acceptance tests for the code-changing ones; self-test extended | Score the end state, and prove the checks discriminate. |
+| `tests/run.sh`: eval coverage and frozen-manifest checks | A skill cannot silently lose its eval, and held-out cases cannot be edited unnoticed. |
+| README: illustrative new-project walkthrough | Shows the order of steps for a greenfield project. |
+| `grill-me-one-question`: added the `skill-fired` indicator | Consistency; the coverage check requires one on every case. |
+
 # v2.2
 
 | Change | Why |

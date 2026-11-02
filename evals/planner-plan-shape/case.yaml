@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: planner-plan-shape
+context:
+  scaffold_script: fixture.sh

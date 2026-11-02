@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: security-grill-me-domains
+context:
+  scaffold_script: fixture.sh

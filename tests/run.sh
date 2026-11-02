@@ -70,6 +70,19 @@ else
   printf '%s\n' "$st_out" | sed 's/^/       /'
 fi
 
+echo "Eval coverage (every skill has an in-sample and a held-out case)"
+for f in skills/*/SKILL.md; do
+  s="$(basename "$(dirname "$f")")"
+  check "$s: has an in-sample eval case" "grep -lE '^tags:.*[[ ,]${s}[],]' evals/*/prompt.md | grep -q ."
+  check "$s: has a held-out eval case"   "grep -lE '^tags:.*[[ ,]${s}[],]' evals/holdout/*/prompt.md | grep -q ."
+done
+check "held-out case names start with holdout-" "! grep -L '^name: holdout-' evals/holdout/*/case.yaml | grep -q ."
+check "held-out cases are tagged holdout"       "! grep -L '^tags:.*holdout' evals/holdout/*/prompt.md | grep -q ."
+check "every eval case has a skill-fired indicator" "! ls -d evals/*/graders evals/holdout/*/graders | while read -r g; do [ -f \"\$g/skill-fired.md\" ] || echo \"\$g\"; done | grep -q ."
+
+echo "Held-out set is frozen (evals/holdout/FROZEN.sha256)"
+check "held-out files match the frozen manifest" "(cd evals/holdout && find . -type f ! -name FROZEN.sha256 ! -name README.md | LC_ALL=C sort | xargs sha256sum | diff -u FROZEN.sha256 -)"
+
 echo "Plugin validation"
 if command -v claude >/dev/null 2>&1; then
   check "claude plugin validate --strict" "claude plugin validate --strict ."
