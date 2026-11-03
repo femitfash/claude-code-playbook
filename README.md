@@ -6,11 +6,39 @@ It doesn't re-document features. For those, read the official [best practices](h
 
 ## Install
 
+Plugin menu (type these in the Claude Code chat box):
+
 ```
-/plugin install playbook --marketplace femitfash/claude-code-playbook
+/plugin marketplace add femitfash/claude-code-playbook
+/plugin install playbook@claude-code-playbook
 ```
 
-(or `claude plugin marketplace add femitfash/claude-code-playbook`, then `claude plugin install playbook@claude-code-playbook`)
+Terminal (needs the `claude` command on your PATH):
+
+```
+claude plugin marketplace add femitfash/claude-code-playbook
+claude plugin install playbook@claude-code-playbook
+```
+
+Install once per machine, not per project. If `/plugin` is not available in your environment, see the other install routes in [`docs/GETTING-STARTED.md`](docs/GETTING-STARTED.md).
+
+## Update
+
+An installed plugin does not update itself reliably, and it only updates when its version number changes. To get the latest version:
+
+```
+claude plugin marketplace update claude-code-playbook
+claude plugin update playbook@claude-code-playbook
+```
+
+Then restart Claude Code (or reload the VS Code window). In the plugin menu, `/plugin marketplace update claude-code-playbook` does the first step. If the second step does not pick up the new version, uninstall and reinstall:
+
+```
+claude plugin uninstall playbook@claude-code-playbook
+claude plugin install playbook@claude-code-playbook
+```
+
+Check the installed version: `claude plugin list`. The current version is in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
 
 ## Quick start
 
@@ -60,14 +88,15 @@ See also [the new-project example](#example-starting-a-new-project) below.
 
 An illustrative walkthrough for a greenfield project, here a small invoicing tool for freelancers. It shows the order of steps and where you stay in control. It is not a recorded session, and the prompts and replies are paraphrased.
 
-**1. Install and set up guardrails (once per machine or project, about 5 minutes)**
+**1. Install and set up guardrails (install once per machine; set up once per project, about 5 minutes)**
 
 ```
-/plugin install playbook --marketplace femitfash/claude-code-playbook
+/plugin marketplace add femitfash/claude-code-playbook
+/plugin install playbook@claude-code-playbook
 ```
 
-- Copy `templates/settings.baseline.json` into the project's `.claude/settings.json`, and read `templates/SETTINGS-NOTES.md` (these rules are guardrails, not a security boundary; add a sandbox).
-- Copy `templates/verify.sh.example` to `.claude/verify.sh`, edit it to run your real typecheck and tests, then `chmod +x`. From now on Claude cannot finish a turn while that script fails (up to 3 retries per session).
+- Paste the setup prompt from [`docs/GETTING-STARTED.md`](docs/GETTING-STARTED.md). It merges `templates/settings.baseline.json` and `templates/settings.sandbox.json` into `.claude/settings.json` (read `templates/SETTINGS-NOTES.md`: these are guardrails, not a security boundary) and creates `.claude/verify.sh`, a wrapper that runs `scripts/check.sh`.
+- Later, put your real typecheck and tests in `scripts/check.sh`. From then on Claude cannot finish a turn while it fails (up to 3 retries per session).
 
 **2. Pin down the idea before any code**
 

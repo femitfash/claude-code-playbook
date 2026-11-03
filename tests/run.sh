@@ -180,6 +180,7 @@ check "wrapper template delegates to scripts/check.sh" "bash -n templates/verify
 check "getting-started doc has the setup and kickoff prompts" "grep -q 'Setup prompt' docs/GETTING-STARTED.md && grep -q 'Kickoff prompt' docs/GETTING-STARTED.md && grep -q 'grill-me skill' docs/GETTING-STARTED.md && grep -q 'scripts/check.sh' docs/GETTING-STARTED.md"
 check "setup prompt's currency markers exist in the skills (so the prompt cannot go stale)" "grep -q 'Use proactively' skills/grill-me/SKILL.md && grep -q 'Use proactively' docs/GETTING-STARTED.md && grep -q 'Start only when an approved plan exists' skills/implementer/SKILL.md && grep -q 'Start only when an approved plan exists' docs/GETTING-STARTED.md && grep -q 'Reviews run:' skills/phase-gate/SKILL.md && grep -q 'Reviews run:' docs/GETTING-STARTED.md"
 check "setup prompt asks for the current plugin version or higher" "v=\$(python3 -c 'import json;print(json.load(open(\".claude-plugin/plugin.json\"))[\"version\"])') && python3 -c 'import sys;v=tuple(int(x) for x in sys.argv[1].split(\".\"));sys.exit(0 if v>=(3,0,1) else 1)' \"\$v\""
+check "README documents install and update commands" "grep -q 'claude plugin marketplace update claude-code-playbook' README.md && grep -q 'claude plugin update playbook@claude-code-playbook' README.md && grep -q 'claude plugin install playbook@claude-code-playbook' README.md && ! grep -q 'install playbook --marketplace' README.md"
 check "README links the getting-started doc" "grep -q 'docs/GETTING-STARTED.md' README.md"
 
 echo "AI log and time-box docs"

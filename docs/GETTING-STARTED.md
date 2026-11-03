@@ -33,7 +33,14 @@ claude plugin install playbook@claude-code-playbook
 }
 ```
 
-**To refresh an old install:** `/plugin marketplace update claude-code-playbook`, then uninstall and reinstall. An install only updates when the plugin's version changes.
+**To update an existing install** (it only updates when the plugin's version changes):
+
+```
+claude plugin marketplace update claude-code-playbook
+claude plugin update playbook@claude-code-playbook
+```
+
+Then restart Claude Code or reload the VS Code window. In the plugin menu, `/plugin marketplace update claude-code-playbook` does the first step. If the update does not take, uninstall and reinstall (`claude plugin uninstall playbook@claude-code-playbook`, then install again).
 
 **Check it worked:** type `/` in the chat box and look for `playbook:` skills such as `playbook:planner`.
 
@@ -56,7 +63,8 @@ Writes under .claude/ will trigger permission prompts; I will approve them.
    - skills/grill-me/SKILL.md contains "Use proactively"
    - skills/implementer/SKILL.md contains "Start only when an approved plan exists"
    - skills/phase-gate/SKILL.md contains "Reviews run:"
-   If any is false, tell me to refresh it (uninstall, then install) and stop.
+   If any is false, tell me to update it (`claude plugin marketplace update claude-code-playbook`, then
+   `claude plugin update playbook@claude-code-playbook`, then restart) and stop.
    If you cannot find the folder, fetch the files from
    https://github.com/femitfash/claude-code-playbook instead and tell me.
 4. Create:
