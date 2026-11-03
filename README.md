@@ -23,9 +23,9 @@ It doesn't re-document features. For those, read the official [best practices](h
 
 | Skill | Use |
 |---|---|
-| `/playbook:grill-me` | Interview you on a vague design, one question at a time, until resolved |
+| `/playbook:grill-me` | Interview you on a vague design, one question at a time, until resolved; starts by itself when you begin a project or feature, then writes the answers to `PRD.md` and hands off to `planner` |
 | `/playbook:security-grill-me` | Same, for threat modeling (auth, data, tenancy, secrets) |
-| `/playbook:planner` | Phase-scoped plan template; run in plan mode |
+| `/playbook:planner` | Phase-scoped plan template, planned from `PRD.md`; run in plan mode |
 | `/playbook:implementer` | Execute an approved plan, test-first, scope-locked; starts by itself once you approve a plan, and hands off to `phase-gate` |
 | `/playbook:phase-gate` | Tests + code review + security review (the bundled `/code-review` and `/security-review` when they can be run, otherwise a direct review that says so) + project constraints, then PASS/BLOCK; runs in a fresh forked context; runs by itself when `implementer` finishes |
 | `/playbook:debug` | Root-cause diagnosis; a guard hook blocks the edit tools and common Bash file writes (not a sandbox) |
@@ -40,12 +40,13 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `templates/verify.sh.example` (npm), `verify.python.sh.example`, `verify.go.sh.example`, `verify.rust.sh.example` | Copy the one for your stack to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session. It runs only when the working tree changed since the last passing run (`PLAYBOOK_VERIFY_ALWAYS=1` to run on every stop, `PLAYBOOK_VERIFY_MAX_RETRIES` to change the cap, `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
 | `templates/settings.sandbox.json` | Sandbox settings to merge into `.claude/settings.json`: sandbox on, no opt-out, network limited to package registries. The real boundary; the permission rules above are guardrails |
 | `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
+| `templates/CLAUDE.project.md` | The workflow rule (grill-me, then plan, then implement) to paste into a project's `CLAUDE.md`, so it applies even if the session-start hint is switched off |
 | `templates/AI-LOG.md` | Template and rules for logging how you used AI (asked / got / kept-changed-rejected / why), for READMEs and reviews that ask for it |
 | [`docs/TIMEBOXED.md`](docs/TIMEBOXED.md) | A minute-by-minute plan for a 30-minute build, and which skills to skip |
 
 ## Which path?
 
-- **Greenfield project or a large, ambiguous feature:** full path below (`project-init`, `grill-me`, `planner`, `implementer`, `phase-gate`).
+- **Greenfield project or a large, ambiguous feature:** just describe what you want. A session-start hook reminds Claude of the order, so it runs `grill-me` first (the answers become `PRD.md`), then `planner` in plan mode, then, after you approve, `implementer` and `phase-gate`. Set `PLAYBOOK_NO_WORKFLOW_HINT=1` to switch the hint off. Full path with a design doc: `project-init`.
 - **Bug fix, small change, or legacy code:** `/playbook:quick-fix` (and `/playbook:debug` if the cause is unclear).
 - **A hard time limit (for example a 30-minute challenge):** [`docs/TIMEBOXED.md`](docs/TIMEBOXED.md).
 - **Resuming:** `claude --continue`, or `/playbook:resume` if the conversation is gone.
@@ -120,7 +121,7 @@ Resolve every BLOCK finding before opening the PR. For features touching auth, c
 ## The method
 
 1. **Design first.** A `DESIGN.md` with locked decisions, phases and exit criteria is the source of truth across sessions.
-2. **Interrogate, then plan.** `grill-me` removes ambiguity; `planner` (plan mode) gets approval before any code.
+2. **Interrogate, then plan.** `grill-me` removes ambiguity and writes the answers to `PRD.md`; `planner` (plan mode) plans from it and gets approval before any code.
 3. **Implement narrowly.** Test-first, small commits, no scope creep.
 4. **Gate.** `phase-gate` must pass before a PR or phase close.
 5. **Enforce, don't just advise.** Rules that can't have exceptions live in permission rules and hooks, not in prose.

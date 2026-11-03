@@ -16,7 +16,7 @@ Adjust the minutes to your limit. The order matters more than the numbers.
 | Minutes | Do | Playbook |
 |---|---|---|
 | 0 to 3 | **Decide the smallest end-to-end slice.** One user, one path, finished beats a large slice that does not run. Write down what you are cutting. | none |
-| 3 to 8 | **Write the spec file first** (outcome, constraints copied from the brief, acceptance criteria). You write it; the AI may help. Name the 3 or more automated checks the work must pass. | `CLAUDE.md`, `SPEC.md` or `AGENTS.md` |
+| 3 to 8 | **Short interview, then the spec file.** `grill-me` starts by itself for a new project; tell it a limit (for example "at most 3 questions") and it records the rest as open questions in `PRD.md`. Then **write the spec file** (outcome, constraints copied from the brief, acceptance criteria). You write it; the AI may help. Name the 3 or more automated checks the work must pass. | `CLAUDE.md`, `SPEC.md` or `AGENTS.md` |
 | 8 to 10 | **Turn the checks into `.claude/verify.sh`** so the one-command test is also what stops Claude from finishing early. | Stop hook |
 | 10 to 11 | **Short plan** in plan mode: files, verification command, exit criterion. Approve it. | `planner` |
 | 11 to 24 | **Build test-first.** Run the checks often. Commit about every 10 minutes. Log each non-trivial AI interaction in `AI-NOTES.md` as it happens. | `implementer` |

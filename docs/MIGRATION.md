@@ -42,6 +42,20 @@ Plugin version bumped from 2.2.0 to 3.0.0. Claude Code decides whether an instal
 
 The sections headed "in progress" below are all part of this release.
 
+# v3.0.1
+
+Plugin version bumped to 3.0.1 so existing installs pick up the grill-me-first changes below (installs only update when the version changes). Refresh with `/plugin marketplace update claude-code-playbook`, or uninstall and reinstall.
+
+# v3.0 (in progress): grill-me first
+
+| Change | Why |
+|---|---|
+| `grill-me`: description now says to use it proactively, before any planning or coding, when a new project or non-trivial feature has no settled PRD.md or DESIGN.md | Its old description only matched "grill me", so it never started by itself. Skill descriptions are an unreliable trigger on their own, so the next row backs it up. |
+| New `hooks/session-start.sh` (SessionStart hook) prints the workflow rule into every session; `PLAYBOOK_NO_WORKFLOW_HINT=1` turns it off. New `templates/CLAUDE.project.md` carries the same rule for a project's CLAUDE.md | Puts the order in front of Claude at session start. The hint applies to every session where the plugin is enabled; it tells Claude to use `quick-fix` for small changes. |
+| `grill-me` writes `PRD.md` after you confirm the summary, then invokes `planner`; respects a stated limit on questions or time; writes nothing else | The answers feed the plan. |
+| `planner` reads `PRD.md` and runs `grill-me` first if no PRD or design doc settles the requirements | The plan is built from the interview, not from guesses. |
+| Verified live (about $0.17): a plain "build a habit-tracker app" request invoked `grill-me` first and asked one question; after confirmation it wrote `PRD.md` and invoked `planner`. Not verified: the real `ExitPlanMode` dialog, and behaviour in the VS Code extension | |
+
 # v3.0 (in progress): automatic chain
 
 | Change | Why |
