@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Copy to <project>/.claude/verify.sh and chmod +x, once, during setup.
+# The playbook's Stop hook runs this file before Claude finishes a turn. It delegates to
+# scripts/check.sh, so the checks themselves can be written and edited later without touching
+# .claude/ (Claude Code asks for approval every time a file under .claude/ is written).
+# Until scripts/check.sh exists and is executable, this does nothing.
+set -euo pipefail
+[ -x scripts/check.sh ] || exit 0
+exec bash scripts/check.sh

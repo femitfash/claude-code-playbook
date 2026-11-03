@@ -175,6 +175,13 @@ check "grill-me writes nothing but PRD.md, and only after confirmation" "grep -q
 check "planner reads PRD.md and runs grill-me first when requirements are unsettled" "grep -q 'PRD.md' skills/planner/SKILL.md && grep -q 'run the .grill-me. skill first' skills/planner/SKILL.md"
 check "project workflow template exists and names the order" "grep -q 'grill-me' templates/CLAUDE.project.md && grep -q 'planner' templates/CLAUDE.project.md && grep -q 'implementer' templates/CLAUDE.project.md"
 
+echo "Getting started (docs/GETTING-STARTED.md)"
+check "wrapper template delegates to scripts/check.sh" "bash -n templates/verify.wrapper.sh.example && grep -q 'scripts/check.sh' templates/verify.wrapper.sh.example"
+check "getting-started doc has the setup and kickoff prompts" "grep -q 'Setup prompt' docs/GETTING-STARTED.md && grep -q 'Kickoff prompt' docs/GETTING-STARTED.md && grep -q 'grill-me skill' docs/GETTING-STARTED.md && grep -q 'scripts/check.sh' docs/GETTING-STARTED.md"
+check "setup prompt's currency markers exist in the skills (so the prompt cannot go stale)" "grep -q 'Use proactively' skills/grill-me/SKILL.md && grep -q 'Use proactively' docs/GETTING-STARTED.md && grep -q 'Start only when an approved plan exists' skills/implementer/SKILL.md && grep -q 'Start only when an approved plan exists' docs/GETTING-STARTED.md && grep -q 'Reviews run:' skills/phase-gate/SKILL.md && grep -q 'Reviews run:' docs/GETTING-STARTED.md"
+check "setup prompt asks for the current plugin version or higher" "v=\$(python3 -c 'import json;print(json.load(open(\".claude-plugin/plugin.json\"))[\"version\"])') && python3 -c 'import sys;v=tuple(int(x) for x in sys.argv[1].split(\".\"));sys.exit(0 if v>=(3,0,1) else 1)' \"\$v\""
+check "README links the getting-started doc" "grep -q 'docs/GETTING-STARTED.md' README.md"
+
 echo "AI log and time-box docs"
 check "AI-LOG template has the notes block and the pushback structure" "grep -q 'Asked:' templates/AI-LOG.md && grep -q 'Kept:' templates/AI-LOG.md && grep -q 'The pushback moment' templates/AI-LOG.md && grep -q 'Only real interactions' templates/AI-LOG.md"
 check "AI-LOG example is labelled illustrative" "grep -qi 'made-up project' templates/AI-LOG.md"

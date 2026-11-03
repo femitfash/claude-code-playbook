@@ -42,6 +42,14 @@ Plugin version bumped from 2.2.0 to 3.0.0. Claude Code decides whether an instal
 
 The sections headed "in progress" below are all part of this release.
 
+# v3.0.2
+
+| Change | Why |
+|---|---|
+| `docs/GETTING-STARTED.md`: install options, a setup prompt and a kickoff prompt anyone can copy, what to expect, troubleshooting | The prompts were written for one challenge; now any playbook user can start a project the same way. The setup prompt checks the plugin is current (version and key skill text) before doing anything. |
+| `templates/verify.wrapper.sh.example`: `.claude/verify.sh` becomes a wrapper that runs `scripts/check.sh` | Writing under `.claude/` triggers an approval prompt every time (found in a dry run). The wrapper is written once; the checks live outside `.claude/`. |
+| Plugin version 3.0.2 | Existing installs only update when the version changes. |
+
 # v3.0.1
 
 Plugin version bumped to 3.0.1 so existing installs pick up the grill-me-first changes below (installs only update when the version changes). Refresh with `/plugin marketplace update claude-code-playbook`, or uninstall and reinstall.
