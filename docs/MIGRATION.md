@@ -42,6 +42,10 @@ Plugin version bumped from 2.2.0 to 3.0.0. Claude Code decides whether an instal
 
 The sections headed "in progress" below are all part of this release.
 
+# Docs: update instructions
+
+README and `docs/GETTING-STARTED.md` now give the update commands (`claude plugin marketplace update`, then `claude plugin update`, with uninstall and reinstall as the fallback), and the README's install block matches the commands used everywhere else. The old README line `/plugin install playbook --marketplace ...` is replaced by the two-step `marketplace add` then `install playbook@claude-code-playbook`. Documentation only; no plugin version change.
+
 # v3.0.2
 
 | Change | Why |
