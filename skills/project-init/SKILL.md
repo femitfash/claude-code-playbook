@@ -22,7 +22,7 @@ Rules for the whole run:
 
 Ask for (or extract from the design doc) the stack, test stack, Phase 0 exit criterion and critical constraints. Then draft:
 
-- `CLAUDE.md` (under 200 lines; link to DESIGN.md, don't duplicate it) with: authoritative-reference pointer, the exact **test / typecheck / lint commands**, commit conventions (conventional commits, trunk-based, each PR names its phase and exit criterion), Phase 0 exit criterion verbatim, "Hard boundary rules" (constraints verbatim), and a must-plan-first rule.
+- `CLAUDE.md` (under 200 lines; link to DESIGN.md, don't duplicate it) with: authoritative-reference pointer, the exact **test / typecheck / lint commands**, commit conventions (conventional commits, trunk-based, each PR names its phase and exit criterion), Phase 0 exit criterion verbatim, "Hard boundary rules" (constraints verbatim), and a must-plan-first rule, and the workflow rule from the playbook's `templates/CLAUDE.project.md` (grill-me first, then plan, then implement).
 - Topic-specific conventions in `.claude/rules/<topic>.md`, using `paths:` frontmatter so they load only for matching files (e.g. testing rules for `**/*.test.ts`).
 - A `CLAUDE.local.md` entry in `.gitignore`.
 

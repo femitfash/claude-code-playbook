@@ -165,10 +165,20 @@ check "budget is split evenly (9 over 9 cases)"      "printf '%s\n' \"\$hold_out
 check "two models double the invocations"            "[ \"\$(printf '%s\n' \"\$two_out\" | wc -l | tr -d ' ')\" = \"$(( 2 * n_hold ))\" ]"
 check "manual workflow: dispatch only, budget required" "grep -q 'workflow_dispatch' .github/workflows/evals.yml && ! grep -qE '^[[:space:]]*(pull_request|push|schedule):' .github/workflows/evals.yml && grep -A3 'budget:' .github/workflows/evals.yml | grep -q 'required: true'"
 
+echo "Workflow triggers (grill-me first)"
+check "SessionStart hook is registered next to Stop" "python3 -c 'import json,sys;h=json.load(open(\"hooks/hooks.json\"))[\"hooks\"];sys.exit(0 if \"SessionStart\" in h and \"Stop\" in h else 1)'"
+check "session-start hook prints the workflow and exits 0" "out=\$(hooks/session-start.sh) && printf '%s' \"\$out\" | grep -q 'grill-me' && printf '%s' \"\$out\" | grep -q 'planner' && printf '%s' \"\$out\" | grep -q 'implementer'"
+check "session-start hook can be switched off" "[ -z \"\$(PLAYBOOK_NO_WORKFLOW_HINT=1 hooks/session-start.sh)\" ]"
+check "grill-me triggers proactively and writes PRD.md" "fm skills/grill-me/SKILL.md | grep -q 'Use proactively' && grep -q 'PRD.md' skills/grill-me/SKILL.md && grep -q 'invoke the .planner. skill' skills/grill-me/SKILL.md"
+check "grill-me respects a question limit" "grep -q 'Respect any limit' skills/grill-me/SKILL.md"
+check "grill-me writes nothing but PRD.md, and only after confirmation" "grep -q 'only file you may write is' skills/grill-me/SKILL.md"
+check "planner reads PRD.md and runs grill-me first when requirements are unsettled" "grep -q 'PRD.md' skills/planner/SKILL.md && grep -q 'run the .grill-me. skill first' skills/planner/SKILL.md"
+check "project workflow template exists and names the order" "grep -q 'grill-me' templates/CLAUDE.project.md && grep -q 'planner' templates/CLAUDE.project.md && grep -q 'implementer' templates/CLAUDE.project.md"
+
 echo "AI log and time-box docs"
 check "AI-LOG template has the notes block and the pushback structure" "grep -q 'Asked:' templates/AI-LOG.md && grep -q 'Kept:' templates/AI-LOG.md && grep -q 'The pushback moment' templates/AI-LOG.md && grep -q 'Only real interactions' templates/AI-LOG.md"
 check "AI-LOG example is labelled illustrative" "grep -qi 'made-up project' templates/AI-LOG.md"
-check "TIMEBOXED plan covers spec, verify, build and the skip list" "grep -q 'Write the spec file first' docs/TIMEBOXED.md && grep -q 'verify.sh' docs/TIMEBOXED.md && grep -q 'Skip these in a time box' docs/TIMEBOXED.md"
+check "TIMEBOXED plan covers spec, verify, build and the skip list" "grep -qi 'write the spec file' docs/TIMEBOXED.md && grep -q 'verify.sh' docs/TIMEBOXED.md && grep -q 'Skip these in a time box' docs/TIMEBOXED.md"
 check "README links both docs" "grep -q 'docs/TIMEBOXED.md' README.md && grep -q 'templates/AI-LOG.md' README.md"
 
 echo "Plugin validation"
