@@ -14,10 +14,14 @@ It doesn't re-document features. For those, read the official [best practices](h
 
 ## Quick start
 
-1. Install the plugin (above).
-2. In your project, copy the `templates/verify.*.sh.example` for your stack to `.claude/verify.sh` (and `chmod +x`), and merge `templates/settings.baseline.json` and `templates/settings.sandbox.json` into `.claude/settings.json`.
-3. Give Claude a real bug: `/playbook:quick-fix <what is broken>`. It reproduces, writes a failing test, makes the smallest fix and runs the tests.
-4. For a new project or a large feature, follow [the new-project example](#example-starting-a-new-project) below.
+Copy-paste prompts for installing, setting up a project and kicking it off are in [`docs/GETTING-STARTED.md`](docs/GETTING-STARTED.md). In short:
+
+1. Install the plugin (above), and check that `playbook:` skills show up when you type `/`.
+2. Paste the setup prompt in an empty project folder. It writes the guardrails and the Stop-hook wrapper (`.claude/verify.sh`, from `templates/verify.wrapper.sh.example`, which runs `scripts/check.sh`).
+3. Paste the kickoff prompt. Claude interviews you (`grill-me`), writes `PRD.md`, plans in plan mode, and after you approve, builds and reviews it.
+4. For a clear bug, skip all that: `/playbook:quick-fix <what is broken>`.
+
+See also [the new-project example](#example-starting-a-new-project) below.
 
 ## What's inside
 
@@ -40,6 +44,7 @@ It doesn't re-document features. For those, read the official [best practices](h
 | `templates/verify.sh.example` (npm), `verify.python.sh.example`, `verify.go.sh.example`, `verify.rust.sh.example` | Copy the one for your stack to `<project>/.claude/verify.sh`; the plugin's Stop hook runs it and blocks "done" if it fails, up to 3 retries per session. It runs only when the working tree changed since the last passing run (`PLAYBOOK_VERIFY_ALWAYS=1` to run on every stop, `PLAYBOOK_VERIFY_MAX_RETRIES` to change the cap, `PLAYBOOK_VERIFY_DISABLE=1` to skip) |
 | `templates/settings.sandbox.json` | Sandbox settings to merge into `.claude/settings.json`: sandbox on, no opt-out, network limited to package registries. The real boundary; the permission rules above are guardrails |
 | `templates/CLAUDE.user.md` | Lean personal conventions for `~/.claude/CLAUDE.md` |
+| `templates/verify.wrapper.sh.example` | Copy to `.claude/verify.sh` once. It runs `scripts/check.sh`, so the checks can be written and edited later without more `.claude/` approval prompts |
 | `templates/CLAUDE.project.md` | The workflow rule (grill-me, then plan, then implement) to paste into a project's `CLAUDE.md`, so it applies even if the session-start hint is switched off |
 | `templates/AI-LOG.md` | Template and rules for logging how you used AI (asked / got / kept-changed-rejected / why), for READMEs and reviews that ask for it |
 | [`docs/TIMEBOXED.md`](docs/TIMEBOXED.md) | A minute-by-minute plan for a 30-minute build, and which skills to skip |
